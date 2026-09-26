@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel del Organizador - TicketEventos{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <!-- Encabezado del Panel -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-extrabold mb-1"><i class="bi bi-speedometer2 text-primary me-2"></i>Panel del Organizador</h2>
+            <p class="text-muted small mb-0">Gestiona tus eventos, controla la venta de tickets y revisa tus ingresos simulados.</p>
+        </div>
+        <a href="{% url 'crear_evento' %}" class="btn btn-primary fw-bold px-4 py-2 shadow-sm">
+            <i class="bi bi-plus-circle-fill me-2"></i> Publicar Nuevo Evento
+        </a>
+    </div>
+
+    <!-- Tarjetas de Métricas -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 border-start border-primary border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase d-block mb-1">Eventos Creados</span>
+                        <h2 class="fw-extrabold text-dark mb-0">{{ total_eventos }}</h2>
+                    </div>
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary">
+                        <i class="bi bi-calendar4-event fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 border-start border-success border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase d-block mb-1">Tickets Vendidos</span>
+                        <h2 class="fw-extrabold text-success mb-0">{{ total_tickets_vendidos }}</h2>
+                    </div>
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
+                        <i class="bi bi-ticket-perforated fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 border-start border-info border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase d-block mb-1">Ingresos Simulados</span>
+                        <h2 class="fw-extrabold text-primary mb-0">${{ total_recaudacion|floatformat:0 }}</h2>
+                    </div>
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info">
+                        <i class="bi bi-cash-stack fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Eventos y Ventas -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="bi bi-table me-2 text-primary"></i>Tus Eventos y Ventas</h5>
+            <span class="badge bg-light text-dark border">{{ eventos|length }} registrado{{ eventos|length|pluralize:"s" }}</span>
+        </div>
+
+        <div class="card-body p-0">
+            {% if eventos %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small text-uppercase text-secondary">
+                            <tr>
+                                <th class="ps-4" style="min-width: 250px;">Evento</th>
+                                <th>Fecha & Lugar</th>
+                                <th>Venta de Entradas</th>
+                                <th>Desglose por Tipo</th>
+                                <th>Recaudación</th>
+                                <th class="text-end pe-4">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for evento in eventos %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ evento.imagen_display }}" class="rounded-3 me-3" style="width: 50px; height: 50px; object-fit: cover;" alt="{{ evento.nombre }}">
+                                            <div>
+                                                <a href="{% url 'detalle_evento' evento.pk %}" class="fw-bold text-dark text-decoration-none d-block">
+                                                    {{ evento.nombre }}
+                                                </a>
+                                                <span class="small text-muted">Cupo total: {{ evento.cupo_total }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small">
+                                            <i class="bi bi-calendar3 me-1 text-primary"></i> {{ evento.fecha|date:"d M Y" }}<br>
+                                            <span class="text-muted"><i class="bi bi-geo-alt me-1 text-danger"></i> {{ evento.lugar }}</span>
+                                        </div>
+                                    </td>
+                                    <td style="min-width: 180px;">
+                                        <div class="d-flex justify-content-between small fw-semibold mb-1">
+                                            <span>{{ evento.total_vendidos }} vendidos</span>
+                                            <span class="text-muted">{{ evento.cupos_disponibles }} disp.</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-primary" role="progressbar" 
+                                                 style="width: {% if evento.cupo_total > 0 %}{% widthratio evento.total_vendidos evento.cupo_total 100 %}{% else %}0{% endif %}%;" 
+                                                 aria-valuenow="{{ evento.total_vendidos }}" aria-valuemin="0" aria-valuemax="{{ evento.cupo_total }}">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            {% for t in evento.tipos_ticket.all %}
+                                                <span class="badge bg-light text-dark border small" title="${{ t.precio|floatformat:0 }} c/u">
+                                                    <strong>{{ t.nombre }}:</strong> {{ t.cantidad_vendida }} / {{ t.cantidad_total }}
+                                                </span>
+                                            {% empty %}
+                                                <span class="text-muted small">Sin tickets</span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-success fs-6">${{ evento.ingresos_totales|floatformat:0 }}</span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'gestionar_tickets' evento.pk %}" class="btn btn-outline-secondary" title="Gestionar Tipos de Ticket">
+                                                <i class="bi bi-ticket-perforated"></i>
+                                            </a>
+                                            <a href="{% url 'editar_evento' evento.pk %}" class="btn btn-outline-secondary" title="Editar Evento">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'eliminar_evento' evento.pk %}" class="btn btn-outline-danger" title="Eliminar Evento">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-plus text-muted" style="font-size: 3.5rem;"></i>
+                    <h5 class="fw-bold mt-3">Aún no has publicado ningún evento</h5>
+                    <p class="text-muted small">Empieza creando tu primer concierto o evento para vender entradas.</p>
+                    <a href="{% url 'crear_evento' %}" class="btn btn-primary fw-semibold mt-2">
+                        <i class="bi bi-plus-circle me-1"></i> Publicar Mi Primer Evento
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

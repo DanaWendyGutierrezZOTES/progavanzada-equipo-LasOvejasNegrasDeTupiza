@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Comprar Entrada - {{ evento.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <!-- Navegación de regreso -->
+            <a href="{% url 'detalle_evento' evento.pk %}" class="btn btn-outline-secondary btn-sm mb-4">
+                <i class="bi bi-arrow-left me-1"></i> Volver al Evento
+            </a>
+
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden bg-white">
+                <div class="bg-dark text-white p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-primary text-uppercase mb-1">Paso 1 de 1: Confirmación</span>
+                        <h3 class="fw-bold mb-0">Adquirir Entradas</h3>
+                    </div>
+                    <i class="bi bi-cart-check-fill fs-1 text-primary"></i>
+                </div>
+
+                <div class="p-4 p-md-5">
+                    <!-- Resumen del Evento -->
+                    <div class="card bg-light border-0 rounded-4 p-3 mb-4">
+                        <div class="row align-items-center g-3">
+                            <div class="col-sm-3">
+                                <img src="{{ evento.imagen_display }}" class="img-fluid rounded-3 w-100" style="height: 90px; object-fit: cover;" alt="{{ evento.nombre }}">
+                            </div>
+                            <div class="col-sm-9">
+                                <h5 class="fw-bold mb-1">{{ evento.nombre }}</h5>
+                                <div class="text-muted small">
+                                    <span><i class="bi bi-calendar3 me-1"></i> {{ evento.fecha|date:"d M Y" }}</span>
+                                    <span class="mx-2">•</span>
+                                    <span><i class="bi bi-clock me-1"></i> {{ evento.hora|time:"H:i" }} hrs</span>
+                                    <span class="mx-2">•</span>
+                                    <span><i class="bi bi-geo-alt me-1"></i> {{ evento.lugar }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Datos del Ticket Seleccionado -->
+                    <div class="d-flex justify-content-between align-items-center p-3 border rounded-4 mb-4">
+                        <div>
+                            <span class="text-muted small d-block">Tipo de Entrada</span>
+                            <h4 class="fw-bold text-dark mb-0">{{ tipo_ticket.nombre }}</h4>
+                            <span class="text-success small fw-semibold">
+                                <i class="bi bi-box-seam me-1"></i> Cupos disponibles: {{ tipo_ticket.cantidad_disponible }}
+                            </span>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small d-block">Precio Unitario</span>
+                            <span class="fs-3 fw-bold text-primary">${{ tipo_ticket.precio|floatformat:0 }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de Compra -->
+                    <form method="POST" action="{% url 'comprar_ticket' tipo_ticket.pk %}">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">¿Cuántas entradas deseas comprar?</label>
+                            <div class="row align-items-center g-3">
+                                <div class="col-sm-6">
+                                    <div class="input-group input-group-lg">
+                                        <button class="btn btn-outline-secondary" type="button" id="btn-restar">-</button>
+                                        {{ form.cantidad }}
+                                        <button class="btn btn-outline-secondary" type="button" id="btn-sumar">+</button>
+                                    </div>
+                                    {% if form.cantidad.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ form.cantidad.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text small">{{ form.cantidad.help_text }}</div>
+                                </div>
+                                <div class="col-sm-6 text-sm-end">
+                                    <span class="text-muted small d-block">Total estimado</span>
+                                    <span class="fs-2 fw-extrabold text-success" id="display-total">${{ tipo_ticket.precio|floatformat:0 }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resumen y Términos Simulación -->
+                        <div class="alert alert-info border-0 rounded-4 small p-3 mb-4">
+                            <div class="d-flex">
+                                <i class="bi bi-info-circle-fill fs-5 text-primary me-3"></i>
+                                <div>
+                                    <strong>Simulación de Compra Académica:</strong>
+                                    <p class="mb-0">
+                                        No se cobrará dinero real. Al hacer clic en <strong>"Simular Pago y Confirmar"</strong>, el sistema descontará los cupos del evento y emitirá tu entrada con un código único de validación (código QR).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold py-3 shadow">
+                                <i class="bi bi-check-circle-fill me-2"></i> Simular Pago y Confirmar Compra
+                            </button>
+                            <a href="{% url 'detalle_evento' evento.pk %}" class="btn btn-light text-muted">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputCantidad = document.querySelector('#id_cantidad');
+        const displayTotal = document.querySelector('#display-total');
+        const btnSumar = document.querySelector('#btn-sumar');
+        const btnRestar = document.querySelector('#btn-restar');
+        const precioUnitario = parseFloat("{{ tipo_ticket.precio }}");
+        const maxDisponible = parseInt("{{ tipo_ticket.cantidad_disponible }}");
+
+        function actualizarTotal() {
+            let cantidad = parseInt(inputCantidad.value) || 1;
+            if (cantidad < 1) cantidad = 1;
+            if (cantidad > maxDisponible) cantidad = maxDisponible;
+            inputCantidad.value = cantidad;
+
+            const total = cantidad * precioUnitario;
+            displayTotal.textContent = '$' + total.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        if (btnSumar && btnRestar && inputCantidad) {
+            btnSumar.addEventListener('click', function() {
+                let actual = parseInt(inputCantidad.value) || 1;
+                if (actual < maxDisponible) {
+                    inputCantidad.value = actual + 1;
+                    actualizarTotal();
+                }
+            });
+
+            btnRestar.addEventListener('click', function() {
+                let actual = parseInt(inputCantidad.value) || 1;
+                if (actual > 1) {
+                    inputCantidad.value = actual - 1;
+                    actualizarTotal();
+                }
+            });
+
+            inputCantidad.addEventListener('input', actualizarTotal);
+        }
+
+        actualizarTotal();
+    });
+</script>
+{% endblock %}

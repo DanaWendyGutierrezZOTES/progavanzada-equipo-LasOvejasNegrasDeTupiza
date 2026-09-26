@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Entradas Compradas - TicketEventos{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-ticket-detailed-fill text-primary me-2"></i>Mis Entradas</h2>
+            <p class="text-muted small mb-0">Aquí encontrarás todas las compras y tickets digitales asociados a tu cuenta.</p>
+        </div>
+        <a href="{% url 'lista_eventos' %}" class="btn btn-outline-primary fw-semibold btn-sm">
+            <i class="bi bi-compass me-1"></i> Explorar Más Eventos
+        </a>
+    </div>
+
+    {% if compras %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for compra in compras %}
+                <div class="col">
+                    <div class="card card-custom h-100 p-0 overflow-hidden bg-white">
+                        <div class="row g-0 h-100">
+                            <div class="col-sm-4 position-relative" style="min-height: 180px; background-color: #1e293b;">
+                                <img src="{{ compra.tipo_ticket.evento.imagen_display }}" class="w-100 h-100" style="object-fit: cover;" alt="{{ compra.tipo_ticket.evento.nombre }}">
+                                <div class="position-absolute bottom-0 start-0 m-2">
+                                    <span class="badge bg-dark bg-opacity-75 text-white font-monospace small">
+                                        {{ compra.codigo_ticket }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-sm-8 d-flex flex-column p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-primary px-2 py-1 small fw-semibold">
+                                        {{ compra.tipo_ticket.nombre }}
+                                    </span>
+                                    <span class="text-muted small">
+                                        {{ compra.fecha_compra|date:"d/m/Y H:i" }}
+                                    </span>
+                                </div>
+
+                                <h5 class="fw-bold mb-2">
+                                    <a href="{% url 'detalle_evento' compra.tipo_ticket.evento.pk %}" class="text-dark text-decoration-none">
+                                        {{ compra.tipo_ticket.evento.nombre }}
+                                    </a>
+                                </h5>
+
+                                <div class="text-secondary small mb-3">
+                                    <div><i class="bi bi-calendar-event text-primary me-1"></i> {{ compra.tipo_ticket.evento.fecha|date:"d M Y" }} - {{ compra.tipo_ticket.evento.hora|time:"H:i" }} hrs</div>
+                                    <div class="text-truncate"><i class="bi bi-geo-alt text-danger me-1"></i> {{ compra.tipo_ticket.evento.lugar }}</div>
+                                    <div><i class="bi bi-people text-info me-1"></i> <strong>{{ compra.cantidad }}</strong> entrada{{ compra.cantidad|pluralize:"s" }} • Total: <strong class="text-success">${{ compra.total|floatformat:0 }}</strong></div>
+                                </div>
+
+                                <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+                                    <span class="font-monospace small fw-bold text-muted">{{ compra.codigo_ticket }}</span>
+                                    <a href="{% url 'detalle_compra' compra.pk %}" class="btn btn-primary btn-sm fw-semibold px-3">
+                                        <i class="bi bi-qr-code me-1"></i> Ver Ticket
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card shadow-sm border-0 rounded-4 text-center py-5 px-4 bg-white">
+            <div class="py-4">
+                <i class="bi bi-ticket-perforated text-muted" style="font-size: 4rem;"></i>
+                <h4 class="fw-bold mt-3">Aún no has comprado entradas</h4>
+                <p class="text-muted max-w-md mx-auto">
+                    Cuando adquieras entradas para cualquier evento, podrás consultar tus códigos y tickets digitales en esta sección.
+                </p>
+                <a href="{% url 'lista_eventos' %}" class="btn btn-primary btn-lg mt-2 fw-semibold">
+                    <i class="bi bi-search me-1"></i> Explorar Cartelera de Eventos
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

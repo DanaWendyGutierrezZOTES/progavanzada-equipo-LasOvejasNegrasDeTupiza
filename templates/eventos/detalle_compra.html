@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Ticket {{ compra.codigo_ticket }} - {{ compra.tipo_ticket.evento.nombre }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    @media print {
+        body {
+            background: white !important;
+        }
+        .navbar-custom, footer, .no-print {
+            display: none !important;
+        }
+        .ticket-wrapper {
+            box-shadow: none !important;
+            border: 2px solid #000 !important;
+        }
+    }
+
+    .ticket-card {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .ticket-header-gradient {
+        background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+        color: white;
+    }
+
+    .ticket-dashed-divider {
+        position: relative;
+        border-top: 2px dashed #cbd5e1;
+        margin: 20px 0;
+    }
+
+    .ticket-dashed-divider::before,
+    .ticket-dashed-divider::after {
+        content: '';
+        position: absolute;
+        top: -14px;
+        width: 28px;
+        height: 28px;
+        background-color: #f8fafc;
+        border-radius: 50%;
+    }
+
+    .ticket-dashed-divider::before {
+        left: -34px;
+    }
+
+    .ticket-dashed-divider::after {
+        right: -34px;
+    }
+
+    .qr-box {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 16px;
+        display: inline-block;
+        border: 2px solid #e2e8f0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+
+            <!-- Mensaje de éxito / No print -->
+            <div class="alert alert-success d-flex align-items-center mb-4 rounded-4 shadow-sm no-print" role="alert">
+                <i class="bi bi-check-circle-fill fs-3 text-success me-3"></i>
+                <div>
+                    <h5 class="alert-heading fw-bold mb-0">¡Entrada Generada Exitosamente!</h5>
+                    <p class="small mb-0">Tu orden ha sido registrada. Presenta este ticket digital o impreso al ingresar al recinto.</p>
+                </div>
+            </div>
+
+            <!-- Ticket Card -->
+            <div class="ticket-card ticket-wrapper mb-4">
+                
+                <!-- Encabezado del Ticket -->
+                <div class="ticket-header-gradient p-4 p-md-5 position-relative">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase">
+                            <i class="bi bi-ticket-fill me-1"></i> Entrada Digital Oficial
+                        </span>
+                        <span class="text-white-50 small font-monospace">{{ compra.codigo_ticket }}</span>
+                    </div>
+
+                    <h2 class="display-6 fw-extrabold text-white mb-2">{{ compra.tipo_ticket.evento.nombre }}</h2>
+                    <p class="text-light opacity-75 mb-0">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ compra.tipo_ticket.evento.lugar }}
+                    </p>
+                </div>
+
+                <!-- Cuerpo del Ticket -->
+                <div class="p-4 p-md-5">
+                    <div class="row g-4 mb-3">
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Fecha del Evento</span>
+                            <span class="fw-bold fs-5 text-dark">
+                                <i class="bi bi-calendar3 text-primary me-1"></i> {{ compra.tipo_ticket.evento.fecha|date:"d M Y" }}
+                            </span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Hora de Apertura</span>
+                            <span class="fw-bold fs-5 text-dark">
+                                <i class="bi bi-clock text-primary me-1"></i> {{ compra.tipo_ticket.evento.hora|time:"H:i" }} hrs
+                            </span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Categoría</span>
+                            <span class="badge bg-primary fs-6 px-3 py-2 fw-semibold">
+                                {{ compra.tipo_ticket.nombre }}
+                            </span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Cantidad de Entradas</span>
+                            <span class="fw-bold fs-5 text-dark">{{ compra.cantidad }} entrada{{ compra.cantidad|pluralize:"s" }}</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Titular de la Entrada</span>
+                            <span class="fw-bold text-dark">{{ compra.usuario.get_full_name|default:compra.usuario.username }}</span>
+                            <span class="text-muted small d-block">{{ compra.usuario.email }}</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted small d-block">Total Pagado (Simulado)</span>
+                            <span class="fw-bold fs-4 text-success">${{ compra.total|floatformat:0 }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Divisor perforado -->
+                    <div class="ticket-dashed-divider"></div>
+
+                    <!-- Código QR y Validación -->
+                    <div class="text-center py-2">
+                        <div class="qr-box mb-3">
+                            <!-- Código QR generado dinámicamente con fallback -->
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ compra.codigo_ticket }}|{{ compra.tipo_ticket.evento.nombre|urlencode }}" 
+                                 alt="QR de Validación" 
+                                 class="img-fluid" 
+                                 style="width: 170px; height: 170px;"
+                                 onerror="this.onerror=null; this.src='https://chart.googleapis.com/chart?chs=180x180&cht=qr&chl={{ compra.codigo_ticket }}';">
+                        </div>
+
+                        <div class="font-monospace fs-4 fw-extrabold text-dark tracking-wide mb-1">
+                            {{ compra.codigo_ticket }}
+                        </div>
+                        <p class="text-muted small mb-0">Escanea este código en el acceso para validar tu entrada.</p>
+                        <span class="badge bg-light text-secondary border mt-2">
+                            Fecha de Emisión: {{ compra.fecha_compra|date:"d/m/Y H:i" }}
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Acciones / Botones (Ocultos en impresión) -->
+            <div class="d-flex flex-wrap gap-2 justify-content-center no-print">
+                <button type="button" onclick="window.print()" class="btn btn-outline-dark fw-semibold px-4 py-2">
+                    <i class="bi bi-printer me-1"></i> Imprimir o Guardar PDF
+                </button>
+                <a href="{% url 'mis_tickets' %}" class="btn btn-primary fw-semibold px-4 py-2">
+                    <i class="bi bi-ticket-detailed me-1"></i> Ir a Mis Tickets
+                </a>
+                <a href="{% url 'lista_eventos' %}" class="btn btn-light fw-semibold px-3 py-2">
+                    Explorar Más Eventos
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
