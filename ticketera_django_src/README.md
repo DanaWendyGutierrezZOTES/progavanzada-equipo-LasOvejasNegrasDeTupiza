@@ -1,9 +1,9 @@
 
-# 🎟️ TicketEventos - Prototipo de Venta y Creación de Eventos
+# 🎟️ TicketEventos Bolivia - Plataforma de Venta y Creación de Eventos
 
-> **Prototipo Académico y Funcional** desarrollado con **Django**, **Python 3**, **SQLite** y **Bootstrap 5**.
+> **Prototipo Académico y Funcional** adaptado para la **Región Bolivia (Bs.)**, desarrollado con **Django**, **Python 3**, **SQLite** y **Bootstrap 5**.
 
-Permite demostrar el flujo completo de una ticketera moderna: creación de eventos por parte de organizadores, listado público con filtros de búsqueda, selección y simulación de compra de tickets con descuento de stock en tiempo real, generación de entradas con código único/QR, historial para compradores y panel de métricas para organizadores.
+Permite demostrar el flujo completo de una ticketera moderna: creación de eventos por parte de organizadores en ciudades de Bolivia (La Paz, Santa Cruz, Cochabamba, etc.), listado público con filtros de búsqueda, selección y simulación de compra de tickets en Bolivianos (**Bs.**) con descuento de stock en tiempo real, generación de entradas con código único/QR, historial para compradores y panel de métricas para organizadores.
 
 ---
 
@@ -13,21 +13,21 @@ Permite demostrar el flujo completo de una ticketera moderna: creación de event
    - **Organizador:** Puede crear, editar y eliminar sus eventos, gestionar categorías de tickets y visualizar su panel de ventas.
    - **Comprador:** Puede explorar la cartelera, adquirir entradas (proceso simulado sin pasarela real) y consultar su historial de tickets digitales.
 2. **CRUD Completo de Eventos:**
-   - Creación con validaciones de fechas, horarios, cupo total, imagen/póster y precio base referencial.
+   - Creación con validaciones de fechas, horarios, cupo total, imagen/póster y precio base referencial en Bolivianos (Bs.).
    - Edición y eliminación protegidas (solo el organizador dueño del evento o superusuario).
 3. **Gestión de Tipos de Ticket:**
-   - Soporta múltiples categorías por evento (ej. *General, VIP, Preventa, Palco*).
-   - Control de stock y asignación de precios por categoría.
+   - Soporta múltiples categorías por evento (ej. *General, VIP Illimani, Preventa, Preferencia*).
+   - Control de stock y asignación de precios por categoría en Bs.
 4. **Buscador y Filtros en Tiempo Real:**
-   - Filtro por texto (artista, recinto, nombre del evento) y por fecha.
+   - Filtro por texto (artista, recinto, ciudad) y por fecha.
 5. **Simulación de Compra de Tickets:**
-   - Selector interactivo de cantidades con cálculo automático de totales.
+   - Selector interactivo de cantidades con cálculo automático de totales en Bolivianos (Bs.).
    - Control de concurrencia y stock seguro mediante transacciones atómicas (`transaction.atomic`) y bloqueo `select_for_update()`.
    - Generación de código único de ticket (ej. `TKT-A87BC1E2`) y visualización de **código QR digital**.
 6. **Vista "Mis Tickets":**
    - Historial de compras con acceso a cada entrada digital formateada para presentar en el acceso o imprimir en PDF.
 7. **Panel del Organizador (Dashboard):**
-   - Métricas clave: eventos publicados, tickets vendidos, recaudación total simulada.
+   - Métricas clave: eventos publicados, tickets vendidos, recaudación total simulada en Bs.
    - Tabla detallada por evento con barras de progreso de ocupación y desglose por categoría.
 
 ---
@@ -41,23 +41,23 @@ Permite demostrar el flujo completo de una ticketera moderna: creación de event
 
 ## ⚙️ Instalación y Puesta en Marcha
 
-### 1. Clonar el Repositorio o acceder al directorio del proyecto
+### 1. Acceder al directorio del proyecto
 ```bash
-cd ticketera_django
+cd ticketera_django/ticketera_django_src
 ```
 
 ### 2. Crear y Activar el Entorno Virtual
 
 En **Windows (PowerShell)**:
 ```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+python -m venv ..\venv
+..\venv\Scripts\Activate.ps1
 ```
 
 En **Windows (Command Prompt)**:
 ```cmd
-python -m venv venv
-venv\Scripts\activate.bat
+python -m venv ..\venv
+..\venv\Scripts\activate.bat
 ```
 
 En **Linux / macOS**:
@@ -76,8 +76,8 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
-### 5. Cargar Datos de Prueba (Seed Data)
-El proyecto incluye un comando personalizado que crea automáticamente usuarios de prueba, 4 conciertos/festivales con múltiples categorías de tickets y compras de ejemplo:
+### 5. Cargar Datos de Prueba (Seed Data Bolivia)
+El proyecto incluye un comando personalizado que crea automáticamente usuarios de prueba, 5 conciertos/festivales en Bolivia (La Paz, Santa Cruz, Cochabamba) con múltiples categorías de tickets en Bs. y compras de ejemplo:
 ```bash
 python manage.py seed_data
 ```
@@ -95,11 +95,12 @@ Abre tu navegador en: **`http://127.0.0.1:8000/`**
 
 Gracias al comando `python manage.py seed_data`, puedes iniciar sesión inmediatamente con cualquiera de estos roles:
 
-| Rol | Usuario | Contraseña | Capacidades |
-| :--- | :--- | :--- | :--- |
-| **Organizador** | `organizador` | `organizador123` | Crear/editar sus eventos, añadir tickets y ver panel de métricas |
-| **Comprador** | `comprador` | `comprador123` | Explorar cartelera, comprar tickets y ver "Mis Tickets" |
-| **Administrador** | `admin` | `admin123` | Acceso completo al sitio y a Django Admin (`/admin/`) |
+| Rol | Usuario | Contraseña | Nombre | Capacidades |
+| :--- | :--- | :--- | :--- | :--- |
+| **Organizador** | `organizador` | `organizador123` | Carlos Mamani | Crear/editar sus eventos, añadir tickets y ver panel de métricas en Bs. |
+| **Comprador** | `comprador` | `comprador123` | Valeria Choque | Explorar cartelera, comprar tickets en Bs. y ver "Mis Tickets" |
+| **Administrador** | `admin` | `admin123` | Admin Bolivia | Acceso completo al sitio y a Django Admin (`/admin/`) |
+
 
 ---
 

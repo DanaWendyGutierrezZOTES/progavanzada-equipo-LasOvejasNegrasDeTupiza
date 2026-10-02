@@ -52,7 +52,7 @@
                         </div>
                         <div class="text-end">
                             <span class="text-muted small d-block">Precio Unitario</span>
-                            <span class="fs-3 fw-bold text-primary">${{ tipo_ticket.precio|floatformat:0 }}</span>
+                            <span class="fs-3 fw-bold text-primary">Bs. {{ tipo_ticket.precio|floatformat:0 }}</span>
                         </div>
                     </div>
 
@@ -78,7 +78,7 @@
                                 </div>
                                 <div class="col-sm-6 text-sm-end">
                                     <span class="text-muted small d-block">Total estimado</span>
-                                    <span class="fs-2 fw-extrabold text-success" id="display-total">${{ tipo_ticket.precio|floatformat:0 }}</span>
+                                    <span class="fs-2 fw-extrabold text-success" id="display-total">Bs. {{ tipo_ticket.precio|floatformat:0 }}</span>
                                 </div>
                             </div>
                         </div>
@@ -88,9 +88,9 @@
                             <div class="d-flex">
                                 <i class="bi bi-info-circle-fill fs-5 text-primary me-3"></i>
                                 <div>
-                                    <strong>Simulación de Compra Académica:</strong>
+                                    <strong>Simulación de Compra en Bolivia:</strong>
                                     <p class="mb-0">
-                                        No se cobrará dinero real. Al hacer clic en <strong>"Simular Pago y Confirmar"</strong>, el sistema descontará los cupos del evento y emitirá tu entrada con un código único de validación (código QR).
+                                        No se cobrará dinero real. Al hacer clic en <strong>"Simular Pago y Confirmar"</strong>, el sistema descontará los cupos del evento y emitirá tu entrada con un código único de validación (código QR) en Bolivianos (Bs.).
                                     </p>
                                 </div>
                             </div>
@@ -132,8 +132,9 @@
             inputCantidad.value = cantidad;
 
             const total = cantidad * precioUnitario;
-            displayTotal.textContent = '$' + total.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            displayTotal.textContent = 'Bs. ' + total.toLocaleString('es-BO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         }
+
 
         if (btnSumar && btnRestar && inputCantidad) {
             btnSumar.addEventListener('click', function() {

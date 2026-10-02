@@ -29,12 +29,12 @@ class TicketeraFlujoCompletoTests(TestCase):
 
         # 3. Crear evento de prueba
         self.evento = Evento.objects.create(
-            nombre='Concierto Test 2026',
-            descripcion='Descripcion de prueba para el evento',
+            nombre='Concierto Test Bolivia 2026',
+            descripcion='Descripcion de prueba para el evento en La Paz',
             fecha=date.today() + timedelta(days=10),
             hora=time(20, 0),
-            lugar='Teatro Caupolican',
-            precio_base=15000.00,
+            lugar='Teatro al Aire Libre, La Paz',
+            precio_base=80.00,
             organizador=self.organizador,
             cupo_total=100
         )
@@ -43,38 +43,39 @@ class TicketeraFlujoCompletoTests(TestCase):
         self.ticket_general = TipoTicket.objects.create(
             evento=self.evento,
             nombre='General',
-            precio=15000.00,
+            precio=80.00,
             cantidad_total=50,
             cantidad_disponible=50
         )
         self.ticket_vip = TipoTicket.objects.create(
             evento=self.evento,
             nombre='VIP',
-            precio=35000.00,
+            precio=200.00,
             cantidad_total=20,
             cantidad_disponible=20
         )
+
 
     def test_listado_publico_eventos(self):
         """Verifica que el listado público muestra el evento y responde HTTP 200"""
         response = self.client.get(reverse('lista_eventos'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Concierto Test 2026')
-        self.assertContains(response, 'Teatro Caupolican')
+        self.assertContains(response, 'Concierto Test Bolivia 2026')
+        self.assertContains(response, 'Teatro al Aire Libre, La Paz')
 
     def test_busqueda_y_filtro_eventos(self):
         """Verifica que el filtro de búsqueda por nombre funciona"""
-        response = self.client.get(reverse('lista_eventos'), {'q': 'Caupolican'})
-        self.assertContains(response, 'Concierto Test 2026')
+        response = self.client.get(reverse('lista_eventos'), {'q': 'Aire Libre'})
+        self.assertContains(response, 'Concierto Test Bolivia 2026')
 
         response_vacio = self.client.get(reverse('lista_eventos'), {'q': 'NoExiste12345'})
-        self.assertNotContains(response_vacio, 'Concierto Test 2026')
+        self.assertNotContains(response_vacio, 'Concierto Test Bolivia 2026')
 
     def test_detalle_evento_muestra_tipos_ticket(self):
         """Verifica que la página de detalle muestra la información del evento y sus entradas"""
         response = self.client.get(reverse('detalle_evento', args=[self.evento.pk]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Concierto Test 2026')
+        self.assertContains(response, 'Concierto Test Bolivia 2026')
         self.assertContains(response, 'General')
         self.assertContains(response, 'VIP')
 
@@ -90,20 +91,20 @@ class TicketeraFlujoCompletoTests(TestCase):
         """Verifica que el organizador sí puede crear un evento nuevo"""
         self.client.login(username='org_test', password='password123')
         data = {
-            'nombre': 'Festival Indie Primavera',
-            'descripcion': 'Festival con bandas emergentes',
+            'nombre': 'Festival Folklorico Primavera',
+            'descripcion': 'Festival con danzas y morenadas en vivo',
             'fecha': (date.today() + timedelta(days=25)).isoformat(),
             'hora': '18:00',
-            'lugar': 'Parque Forestal',
-            'precio_base': '12000.00',
+            'lugar': 'Campo Ferial Chuquiago Marka, La Paz',
+            'precio_base': '50.00',
             'cupo_total': 300,
             'nombre_ticket': 'General Preventa',
-            'precio_ticket': '12000.00',
+            'precio_ticket': '50.00',
             'cupo_ticket': '200'
         }
         response = self.client.post(reverse('crear_evento'), data=data, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(Evento.objects.filter(nombre='Festival Indie Primavera').exists())
+        self.assertTrue(Evento.objects.filter(nombre='Festival Folklorico Primavera').exists())
 
     def test_flujo_compra_simulada(self):
         """Verifica el flujo completo de compra: descuento de stock y generación de código"""
@@ -128,7 +129,7 @@ class TicketeraFlujoCompletoTests(TestCase):
         compra = Compra.objects.filter(usuario=self.comprador, tipo_ticket=self.ticket_vip).first()
         self.assertIsNotNone(compra)
         self.assertEqual(compra.cantidad, 2)
-        self.assertEqual(compra.total, 35000.00 * 2)
+        self.assertEqual(compra.total, 200.00 * 2)
         self.assertTrue(compra.codigo_ticket.startswith('TKT-'))
 
         # Verificar que la compra aparece en 'mis tickets'
@@ -142,13 +143,14 @@ class TicketeraFlujoCompletoTests(TestCase):
             usuario=self.comprador,
             tipo_ticket=self.ticket_general,
             cantidad=3,
-            precio_unitario=15000.00,
-            total=45000.00
+            precio_unitario=80.00,
+            total=240.00
         )
 
         self.client.login(username='org_test', password='password123')
         response = self.client.get(reverse('panel_organizador'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Concierto Test 2026')
+        self.assertContains(response, 'Concierto Test Bolivia 2026')
         # Verificar que aparecen tickets vendidos
         self.assertContains(response, '3')
+

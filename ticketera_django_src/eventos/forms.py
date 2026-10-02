@@ -14,7 +14,7 @@ class RegistroUsuarioForm(UserCreationForm):
         label="Tipo de Cuenta / Rol",
         help_text="Selecciona 'Organizador' si deseas crear y gestionar tus propios eventos."
     )
-    telefono = forms.CharField(max_length=20, required=False, label="Teléfono de Contacto")
+    telefono = forms.CharField(max_length=20, required=False, label="Teléfono de Contacto", widget=forms.TextInput(attrs={'placeholder': 'Ej. +591 71234567'}))
 
     class Meta:
         model = User
@@ -51,15 +51,19 @@ class EventoForm(forms.ModelForm):
         model = Evento
         fields = ['nombre', 'descripcion', 'fecha', 'hora', 'lugar', 'imagen', 'imagen_url', 'precio_base', 'cupo_total']
         widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. Festival Rock en el Parque 2026'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. Los Kjarkas Sinfónico 2026'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe el evento, artistas invitados, información importante...'}),
             'fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'hora': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'lugar': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. Estadio Nacional, Santiago'}),
+            'lugar': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. Teatro al Aire Libre Jaime Laredo, La Paz'}),
             'imagen': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'imagen_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://ejemplo.com/poster.jpg'}),
             'precio_base': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
-            'cupo_total': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'placeholder': 'Ej. 500'}),
+            'cupo_total': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'placeholder': 'Ej. 5000'}),
+        }
+        labels = {
+            'precio_base': 'Precio Base Referencial (Bs.)',
+            'lugar': 'Lugar / Recinto (Bolivia)',
         }
         help_texts = {
             'imagen': 'Sube un archivo de imagen desde tu computador.',
@@ -72,10 +76,14 @@ class TipoTicketForm(forms.ModelForm):
         model = TipoTicket
         fields = ['nombre', 'precio', 'cantidad_disponible']
         widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. General / VIP / Preventa'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. General / VIP Illimani / Preferencia'}),
             'precio': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
             'cantidad_disponible': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'placeholder': 'Cantidad total de tickets'}),
         }
+        labels = {
+            'precio': 'Precio (Bs.)',
+        }
+
 
 
 class CompraTicketForm(forms.Form):

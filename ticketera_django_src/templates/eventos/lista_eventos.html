@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Explorar Conciertos y Eventos - TicketEventos{% endblock %}
+{% block title %}Explorar Conciertos y Eventos en Bolivia - TicketEventos{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -9,10 +9,10 @@
     <div class="hero-banner mb-5 shadow-lg">
         <div class="row align-items-center">
             <div class="col-lg-8">
-                <span class="badge bg-primary text-uppercase px-3 py-2 mb-3 fw-bold">Descubre & Asiste</span>
-                <h1 class="display-4 fw-extrabold mb-3">Encuentra los mejores conciertos y experiencias en vivo</h1>
+                <span class="badge bg-primary text-uppercase px-3 py-2 mb-3 fw-bold">🇧🇴 Cartelera Bolivia</span>
+                <h1 class="display-4 fw-extrabold mb-3">Los mejores conciertos y festivales en vivo en Bolivia</h1>
                 <p class="lead text-light opacity-75 mb-4">
-                    Compra tus entradas de forma rápida, segura y recibe tu ticket digital al instante.
+                    Compra tus entradas en Bolivianos (Bs.), de forma rápida, segura y recibe tu ticket digital con QR al instante.
                 </p>
                 {% if not user.is_authenticated %}
                     <div class="d-flex gap-3">
@@ -40,11 +40,11 @@
         <form method="GET" action="{% url 'lista_eventos' %}#eventos-seccion" class="row g-3 align-items-end">
             <div class="col-md-6 col-lg-5">
                 <label for="q" class="form-label fw-bold text-secondary small">
-                    <i class="bi bi-search me-1"></i> Buscar por artista, evento o lugar
+                    <i class="bi bi-search me-1"></i> Buscar por artista, recinto o ciudad
                 </label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" name="q" id="q" value="{{ query }}" class="form-control border-start-0" placeholder="Ej. Rock, Festival, Estadio...">
+                    <input type="text" name="q" id="q" value="{{ query }}" class="form-control border-start-0" placeholder="Ej. Los Kjarkas, La Paz, Santa Cruz, Rock...">
                 </div>
             </div>
             <div class="col-md-4 col-lg-4">
@@ -69,7 +69,7 @@
     <!-- Resultados Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h3 class="fw-bold mb-0">Próximos Eventos</h3>
+            <h3 class="fw-bold mb-0">Próximos Eventos en Bolivia</h3>
             <p class="text-muted small mb-0">
                 Mostrando {{ eventos|length }} evento{{ eventos|length|pluralize:"s" }}
                 {% if query %}para "<span class="text-primary fw-semibold">{{ query }}</span>"{% endif %}
@@ -138,13 +138,14 @@
                             <div class="pt-3 border-top mt-auto d-flex justify-content-between align-items-center">
                                 <div>
                                     <span class="text-muted small d-block">Precio desde</span>
-                                    <span class="fw-bold fs-5 text-primary">${{ evento.precio_base|floatformat:0 }}</span>
+                                    <span class="fw-bold fs-5 text-primary">Bs. {{ evento.precio_base|floatformat:0 }}</span>
                                 </div>
                                 <a href="{% url 'detalle_evento' evento.pk %}" class="btn btn-outline-primary btn-sm px-3 fw-semibold">
                                     Ver Entradas <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             </div>
                         </div>
+
 
                         <!-- Footer con Organizador -->
                         <div class="card-footer bg-light border-0 px-4 py-2 small text-muted d-flex justify-content-between align-items-center">

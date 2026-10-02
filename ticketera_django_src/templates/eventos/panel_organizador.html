@@ -51,8 +51,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <span class="text-muted small fw-bold text-uppercase d-block mb-1">Ingresos Simulados</span>
-                        <h2 class="fw-extrabold text-primary mb-0">${{ total_recaudacion|floatformat:0 }}</h2>
+                        <h2 class="fw-extrabold text-primary mb-0">Bs. {{ total_recaudacion|floatformat:0 }}</h2>
                     </div>
+
                     <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info">
                         <i class="bi bi-cash-stack fs-3"></i>
                     </div>
@@ -117,7 +118,7 @@
                                     <td>
                                         <div class="d-flex flex-wrap gap-1">
                                             {% for t in evento.tipos_ticket.all %}
-                                                <span class="badge bg-light text-dark border small" title="${{ t.precio|floatformat:0 }} c/u">
+                                                <span class="badge bg-light text-dark border small" title="Bs. {{ t.precio|floatformat:0 }} c/u">
                                                     <strong>{{ t.nombre }}:</strong> {{ t.cantidad_vendida }} / {{ t.cantidad_total }}
                                                 </span>
                                             {% empty %}
@@ -126,8 +127,9 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="fw-bold text-success fs-6">${{ evento.ingresos_totales|floatformat:0 }}</span>
+                                        <span class="fw-bold text-success fs-6">Bs. {{ evento.ingresos_totales|floatformat:0 }}</span>
                                     </td>
+
                                     <td class="text-end pe-4">
                                         <div class="btn-group btn-group-sm">
                                             <a href="{% url 'gestionar_tickets' evento.pk %}" class="btn btn-outline-secondary" title="Gestionar Tipos de Ticket">

@@ -45,7 +45,7 @@ class Evento(models.Model):
     lugar = models.CharField(max_length=255, verbose_name="Lugar / Recinto")
     imagen = models.ImageField(upload_to='eventos/', blank=True, null=True, verbose_name="Imagen (archivo)")
     imagen_url = models.URLField(blank=True, null=True, verbose_name="URL de Imagen (opcional)", help_text="Enlace a imagen externa si no subes un archivo")
-    precio_base = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Precio Base ($)")
+    precio_base = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Precio Base (Bs.)")
     organizador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='eventos', verbose_name="Organizador")
     cupo_total = models.PositiveIntegerField(verbose_name="Cupo Total")
     creado_en = models.DateTimeField(auto_now_add=True)
@@ -86,7 +86,7 @@ class Evento(models.Model):
 class TipoTicket(models.Model):
     evento = models.ForeignKey(Evento, on_delete=models.CASCADE, related_name='tipos_ticket', verbose_name="Evento")
     nombre = models.CharField(max_length=100, verbose_name="Nombre del Ticket", help_text="Ej: General, VIP, Platea")
-    precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio ($)")
+    precio = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio (Bs.)")
     cantidad_total = models.PositiveIntegerField(default=0, verbose_name="Cupo Asignado")
     cantidad_disponible = models.PositiveIntegerField(verbose_name="Cantidad Disponible")
 
@@ -96,7 +96,7 @@ class TipoTicket(models.Model):
         ordering = ['precio']
 
     def __str__(self):
-        return f"{self.nombre} - ${self.precio} ({self.evento.nombre})"
+        return f"{self.nombre} - Bs. {self.precio} ({self.evento.nombre})"
 
     def save(self, *args, **kwargs):
         if not self.pk and self.cantidad_total == 0:
@@ -113,10 +113,11 @@ class Compra(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='compras', verbose_name="Comprador")
     tipo_ticket = models.ForeignKey(TipoTicket, on_delete=models.CASCADE, related_name='compras', verbose_name="Tipo de Ticket")
     cantidad = models.PositiveIntegerField(default=1, verbose_name="Cantidad")
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio Unitario ($)")
-    total = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Total ($)")
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Precio Unitario (Bs.)")
+    total = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Total (Bs.)")
     fecha_compra = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Compra")
     codigo_ticket = models.CharField(max_length=64, unique=True, editable=False, verbose_name="Código Único de Ticket")
+
 
     class Meta:
         ordering = ['-fecha_compra']
