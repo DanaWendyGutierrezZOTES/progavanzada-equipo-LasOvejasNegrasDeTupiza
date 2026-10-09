@@ -1,0 +1,362 @@
+/* ========================================================
+   ESTILOS MODERNOS (2026 MODERN THEME) - TICKETEVENTOS
+   Inspirado en diseño moderno (Astro, Vercel, Linear, Spotify)
+   Diseño Dark Mode con Glassmorphism, degradados sutiles y micro-interacciones.
+======================================================== */
+
+:root {
+  --bg-dark: #090d16;
+  --bg-surface: #111827;
+  --bg-surface-elevated: #1e293b;
+  --bg-card: rgba(17, 24, 39, 0.75);
+  
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-glow: rgba(99, 102, 241, 0.35);
+  
+  --accent-cyan: #06b6d4;
+  --accent-purple: #a855f7;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(99, 102, 241, 0.4);
+  
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+}
+
+/* Reset y Base */
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.08) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar estilizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* --------------------------------------------------------
+   GLASSMORPHISM & TARJETAS MODERNAS
+-------------------------------------------------------- */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-hover);
+  box-shadow: 0 20px 40px -15px var(--primary-glow);
+}
+
+/* --------------------------------------------------------
+   NAVBAR ULTRA-MODERNA
+-------------------------------------------------------- */
+.navbar-modern {
+  background: rgba(9, 13, 22, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.navbar-brand-modern {
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --------------------------------------------------------
+   BOTONES MODERNOS CON GLOW
+-------------------------------------------------------- */
+.btn-modern-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff !important;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  padding: 0.65rem 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 14px 0 var(--primary-glow);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.btn-modern-primary:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px 0 var(--primary-glow);
+}
+
+.btn-modern-outline {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-main) !important;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  padding: 0.65rem 1.3rem;
+  border: 1px solid var(--border-subtle);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.btn-modern-outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------
+   HERO BANNER FUTURISTA
+-------------------------------------------------------- */
+.hero-glow-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.hero-glow-card::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 20%, #a5b4fc 60%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --------------------------------------------------------
+   PILL TAGS & CHIPS DE CATEGORÍA
+-------------------------------------------------------- */
+.category-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  border-radius: 9999px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.category-chip:hover,
+.category-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+/* --------------------------------------------------------
+   TARJETAS DE EVENTO (EVENT CARD)
+-------------------------------------------------------- */
+.event-card {
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+.event-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-hover);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.6), 0 0 20px 2px var(--primary-glow);
+}
+
+.event-image-wrapper {
+  position: relative;
+  height: 210px;
+  overflow: hidden;
+  background: #0f172a;
+}
+.event-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.event-card:hover .event-image-wrapper img {
+  transform: scale(1.05);
+}
+
+/* Degradado inferior sobre la imagen */
+.event-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(9, 13, 22, 0) 40%, rgba(17, 24, 39, 0.95) 100%);
+}
+
+/* --------------------------------------------------------
+   INPUTS MODERNOS
+-------------------------------------------------------- */
+.form-control-modern {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff !important;
+  border-radius: var(--radius-md);
+  padding: 0.65rem 1rem;
+  transition: all 0.2s ease;
+}
+.form-control-modern:focus {
+  background: rgba(15, 23, 42, 0.95);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+  outline: none;
+}
+.form-control-modern::placeholder {
+  color: var(--text-dim);
+}
+
+/* --------------------------------------------------------
+   BOLETO DIGITAL HOLOGRÁFICO (TICKET PASS)
+-------------------------------------------------------- */
+.ticket-pass {
+  background: linear-gradient(145deg, #131b2e 0%, #0d121f 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.15);
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ticket-pass-header {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
+  padding: 2.2rem 2rem 1.8rem;
+  color: #ffffff;
+  position: relative;
+}
+
+.ticket-notch-divider {
+  position: relative;
+  height: 28px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+}
+.ticket-notch-divider::before,
+.ticket-notch-divider::after {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background-color: var(--bg-dark);
+  border-radius: 50%;
+  top: 0px;
+}
+.ticket-notch-divider::before {
+  left: -14px;
+  box-shadow: inset -2px 0 3px rgba(0,0,0,0.4);
+}
+.ticket-notch-divider::after {
+  right: -14px;
+  box-shadow: inset 2px 0 3px rgba(0,0,0,0.4);
+}
+.ticket-dashed-separator {
+  width: 100%;
+  margin: 0 20px;
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.15);
+}
+
+.ticket-pass-body {
+  padding: 2rem;
+  color: var(--text-main);
+}
+
+/* Código de Barras estilizado */
+.barcode-strip {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  height: 45px;
+  align-items: stretch;
+  opacity: 0.85;
+}
+.barcode-strip span {
+  background-color: #cbd5e1;
+  display: inline-block;
+}
+
+/* --------------------------------------------------------
+   KPI CARDS (PANEL DE ORGANIZADOR)
+-------------------------------------------------------- */
+.kpi-card {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+}
+.kpi-icon-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
