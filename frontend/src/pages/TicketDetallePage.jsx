@@ -1,6 +1,6 @@
 // ========================================================
 // PÁGINA: TICKETDETALLEPAGE (PASE DIGITAL 2026)
-// Boleto digital estilo credencial/pase de festival con QR y código de barras
+// Boleto digital estilo credencial/pase de festival con QR y precio en Bs
 // ========================================================
 
 import React, { useState, useEffect } from 'react';
@@ -95,7 +95,7 @@ export default function TicketDetallePage() {
                 </div>
                 <div className="col-6">
                   <span className="text-dim small text-uppercase d-block" style={{ fontSize: '0.7rem' }}>TOTAL PAGADO</span>
-                  <span className="fw-bold text-emerald">${Number(compra.total).toLocaleString('es-ES')}</span>
+                  <span className="fw-bold text-emerald">Bs. {Number(compra.total).toLocaleString('es-ES')}</span>
                 </div>
               </div>
 

@@ -1,12 +1,13 @@
 // ========================================================
 // PÁGINA: DETALLEEVENTOPAGE (DISEÑO MODERNO 2026)
-// Presentación cinematográfica del evento con tickets interactivos
+// Presentación cinematográfica con Mapa del Recinto y Precios en Bs
 // ========================================================
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { obtenerEventoPorId, eliminarEvento } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
+import MapaRecinto from '../components/MapaRecinto';
 
 export default function DetalleEventoPage() {
   const { id } = useParams();
@@ -14,6 +15,7 @@ export default function DetalleEventoPage() {
   const { usuario, esOrganizador } = useAuth();
 
   const [evento, setEvento] = useState(null);
+  const [zonaSeleccionadaId, setZonaSeleccionadaId] = useState(null);
 
   useEffect(() => {
     const data = obtenerEventoPorId(id);
@@ -47,13 +49,13 @@ export default function DetalleEventoPage() {
     <div className="container py-4">
       {/* Botón Volver */}
       <div className="mb-4">
-        <Link to="/" className="text-decoration-none text-muted small d-inline-flex align-items-center gap-1 hover-text-white">
+        <Link to="/" className="text-decoration-none text-muted small d-inline-flex align-items-center gap-1">
           <i className="bi bi-arrow-left"></i> Volver a Cartelera
         </Link>
       </div>
 
       {/* Tarjeta Principal del Evento */}
-      <div className="glass-panel overflow-hidden mb-5">
+      <div className="glass-panel overflow-hidden mb-4">
         <div className="row g-0">
           {/* Imagen de Portada con Aspecto Cinematográfico */}
           <div className="col-lg-6 position-relative" style={{ minHeight: '380px', backgroundColor: '#0f172a' }}>
@@ -140,6 +142,13 @@ export default function DetalleEventoPage() {
         </div>
       </div>
 
+      {/* MAPA INTERACTIVO DEL RECINTO Y ZONAS */}
+      <MapaRecinto
+        evento={evento}
+        zonaSeleccionadaId={zonaSeleccionadaId}
+        onSeleccionarZona={(ticketId) => setZonaSeleccionadaId(ticketId)}
+      />
+
       {/* Sección Inferior: Descripción y Selección de Tickets */}
       <div className="row g-4">
         {/* Descripción */}
@@ -154,24 +163,30 @@ export default function DetalleEventoPage() {
           </div>
         </div>
 
-        {/* Tipos de Tickets Disponibles */}
+        {/* Tipos de Tickets Disponibles con Precios en Bs */}
         <div className="col-lg-5">
           <div className="glass-panel p-4 p-md-5">
             <h4 className="fw-bold text-white mb-3 d-flex align-items-center gap-2">
-              <i className="bi bi-ticket-detailed text-info"></i> Entradas Disponibles
+              <i className="bi bi-ticket-detailed text-info"></i> Comprar Entradas
             </h4>
 
             {evento.tipos_ticket && evento.tipos_ticket.length > 0 ? (
               <div className="d-flex flex-column gap-3">
                 {evento.tipos_ticket.map((ticket) => {
                   const agotado = ticket.cantidad_disponible <= 0;
+                  const estaSeleccionado = zonaSeleccionadaId === ticket.id;
+
                   return (
                     <div
                       key={ticket.id}
-                      className="p-3 rounded-4 border transition-all"
+                      className={`p-3 rounded-4 border transition-all ${estaSeleccionado ? 'shadow-lg' : ''}`}
                       style={{
-                        background: agotado ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.05)',
-                        borderColor: agotado ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.12)'
+                        background: estaSeleccionado
+                          ? 'rgba(99, 102, 241, 0.15)'
+                          : (agotado ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.05)'),
+                        borderColor: estaSeleccionado
+                          ? '#6366f1'
+                          : (agotado ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.12)')
                       }}
                     >
                       <div className="d-flex justify-content-between align-items-start mb-2">
@@ -182,7 +197,7 @@ export default function DetalleEventoPage() {
                           </small>
                         </div>
                         <span className="fs-5 fw-bold" style={{ color: '#38bdf8' }}>
-                          ${Number(ticket.precio).toLocaleString('es-ES')}
+                          Bs. {Number(ticket.precio).toLocaleString('es-ES')}
                         </span>
                       </div>
 
@@ -195,7 +210,7 @@ export default function DetalleEventoPage() {
                           to={`/comprar/${evento.id}/${ticket.id}`}
                           className="btn-modern-primary btn-sm w-100 text-decoration-none mt-2"
                         >
-                          <i className="bi bi-cart3"></i> Adquirir Entrada
+                          <i className="bi bi-cart3"></i> Comprar por Bs. {Number(ticket.precio).toLocaleString('es-ES')}
                         </Link>
                       )}
                     </div>

@@ -1,6 +1,6 @@
 // ========================================================
 // PÁGINA: GESTIONARTICKETSPAGE (DISEÑO MODERNO 2026)
-// Gestión de inventario de tickets por evento
+// Gestión de inventario de tickets por evento en Bolivianos (Bs)
 // ========================================================
 
 import React, { useState, useEffect } from 'react';
@@ -41,7 +41,7 @@ export default function GestionarTicketsPage() {
     setMensaje({ tipo: '', texto: '' });
 
     if (!nombreTicket.trim() || !precioTicket || !cupoTicket) {
-      setMensaje({ tipo: 'danger', texto: 'Por favor completa todos los campos.' });
+      setMensaje({ tipo: 'danger', texto: 'Por favor completa todos los campos requeridos.' });
       return;
     }
 
@@ -53,7 +53,7 @@ export default function GestionarTicketsPage() {
         cantidad_disponible: Number(cupoTicket)
       });
 
-      setMensaje({ tipo: 'success', texto: `Entrada "${nombreTicket}" configurada con éxito.` });
+      setMensaje({ tipo: 'success', texto: `Entrada "${nombreTicket}" configurada con éxito en Bs. ${precioTicket}.` });
       setNombreTicket('');
       setPrecioTicket('');
       setCupoTicket('');
@@ -83,7 +83,7 @@ export default function GestionarTicketsPage() {
         <div>
           <h2 className="fw-extrabold text-white mb-1">Gestionar Entradas</h2>
           <p className="text-muted small mb-0">
-            Evento: <strong className="text-light">{evento.nombre}</strong> &bull; {evento.fecha}
+            Evento: <strong className="text-light">{evento.nombre}</strong> &bull; {evento.lugar}
           </p>
         </div>
         <Link to="/organizador/panel" className="btn-modern-outline btn-sm text-decoration-none">
@@ -112,7 +112,7 @@ export default function GestionarTicketsPage() {
                 <input
                   type="text"
                   required
-                  placeholder="Ej: VIP Golden, Platea Baja..."
+                  placeholder="Ej: VIP Front Stage, Cancha General..."
                   className="form-control form-control-modern"
                   value={nombreTicket}
                   onChange={(e) => setNombreTicket(e.target.value)}
@@ -120,12 +120,12 @@ export default function GestionarTicketsPage() {
               </div>
 
               <div className="mb-3">
-                <label className="form-label small fw-semibold text-muted">Precio Unitario ($)</label>
+                <label className="form-label small fw-semibold text-muted">Precio Unitario (Bs.)</label>
                 <input
                   type="number"
                   required
                   min="0"
-                  placeholder="Ej: 35000"
+                  placeholder="Ej: 250"
                   className="form-control form-control-modern"
                   value={precioTicket}
                   onChange={(e) => setPrecioTicket(e.target.value)}
@@ -138,7 +138,7 @@ export default function GestionarTicketsPage() {
                   type="number"
                   required
                   min="1"
-                  placeholder="Ej: 200"
+                  placeholder="Ej: 500"
                   className="form-control form-control-modern"
                   value={cupoTicket}
                   onChange={(e) => setCupoTicket(e.target.value)}
@@ -170,7 +170,7 @@ export default function GestionarTicketsPage() {
                     <div>
                       <h6 className="fw-bold text-white mb-1">{ticket.nombre}</h6>
                       <div className="small text-muted">
-                        Precio: <strong style={{ color: '#38bdf8' }}>${Number(ticket.precio).toLocaleString('es-ES')}</strong> &bull;{' '}
+                        Precio: <strong style={{ color: '#38bdf8' }}>Bs. {Number(ticket.precio).toLocaleString('es-ES')}</strong> &bull;{' '}
                         Cupo: <strong className="text-light">{ticket.cantidad_disponible}</strong> / {ticket.cantidad_total} disponibles
                       </div>
                     </div>

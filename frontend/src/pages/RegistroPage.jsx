@@ -1,6 +1,7 @@
 // ========================================================
 // PÁGINA: REGISTROPAGE (DISEÑO MODERNO 2026)
-// Registro de nuevos usuarios con selector de rol interactivo
+// Registro público EXCLUSIVO para Compradores
+// (Los Organizadores son registrados únicamente por el Administrador)
 // ========================================================
 
 import React, { useState } from 'react';
@@ -13,7 +14,6 @@ export default function RegistroPage() {
     nombre: '',
     email: '',
     telefono: '',
-    rol: 'comprador',
     password: '',
     confirmPassword: ''
   });
@@ -42,16 +42,11 @@ export default function RegistroPage() {
         nombre: formData.nombre,
         email: formData.email,
         telefono: formData.telefono,
-        rol: formData.rol,
         password: formData.password
       });
 
-      alert(`¡Bienvenido a TicketEventos, ${nuevo.nombre || nuevo.username}! Tu cuenta ha sido creada.`);
-      if (nuevo.rol === 'organizador') {
-        navigate('/organizador/panel');
-      } else {
-        navigate('/');
-      }
+      alert(`¡Bienvenido a TicketEventos, ${nuevo.nombre || nuevo.username}! Tu cuenta de comprador ha sido creada.`);
+      navigate('/');
     } catch (err) {
       setError(err.message || 'Error al registrar el usuario');
     }
@@ -67,8 +62,19 @@ export default function RegistroPage() {
                    style={{ width: '56px', height: '56px', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
                 <i className="bi bi-person-plus-fill fs-3"></i>
               </div>
-              <h3 className="fw-extrabold text-white mb-1">Crear Cuenta</h3>
-              <p className="text-muted small">Únete a la plataforma oficial de eventos</p>
+              <h3 className="fw-extrabold text-white mb-1">Registro de Comprador</h3>
+              <p className="text-muted small">Crea tu cuenta para comprar y gestionar tus entradas oficiales</p>
+            </div>
+
+            {/* Aviso informativo sobre el rol de comprador */}
+            <div className="p-3 rounded-4 mb-4 d-flex align-items-center gap-3 border"
+                 style={{ background: 'rgba(99, 102, 241, 0.08)', borderColor: 'rgba(99, 102, 241, 0.25)' }}>
+              <i className="bi bi-info-circle-fill text-primary fs-4"></i>
+              <div className="small text-muted">
+                <strong className="text-white d-block">Cuenta de Asistente / Comprador</strong>
+                Podrás explorar cartelera, comprar entradas y descargar tus pases QR.
+                *(Los Organizadores son registrados exclusivamente por el Administrador).*
+              </div>
             </div>
 
             {error && (
@@ -120,52 +126,15 @@ export default function RegistroPage() {
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Teléfono</label>
+                  <label className="form-label small fw-semibold text-muted">Teléfono / WhatsApp</label>
                   <input
                     type="text"
                     name="telefono"
                     className="form-control form-control-modern"
-                    placeholder="+56 9 1234 5678"
+                    placeholder="+591 71234567"
                     value={formData.telefono}
                     onChange={handleChange}
                   />
-                </div>
-              </div>
-
-              {/* Selector de Rol Moderno */}
-              <div className="mb-4">
-                <label className="form-label small fw-semibold text-muted mb-2">Selecciona tu perfil de cuenta: *</label>
-                <div className="row g-2">
-                  <div className="col-6">
-                    <div
-                      onClick={() => setFormData(prev => ({ ...prev, rol: 'comprador' }))}
-                      className="p-3 rounded-4 border text-center transition-all cursor-pointer"
-                      style={{
-                        cursor: 'pointer',
-                        background: formData.rol === 'comprador' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                        borderColor: formData.rol === 'comprador' ? '#6366f1' : 'rgba(255, 255, 255, 0.08)'
-                      }}
-                    >
-                      <i className="bi bi-ticket-perforated fs-4" style={{ color: '#818cf8' }}></i>
-                      <div className="fw-bold text-white mt-1 small">Comprador</div>
-                      <small className="text-dim d-block" style={{ fontSize: '0.7rem' }}>Asistir a eventos</small>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div
-                      onClick={() => setFormData(prev => ({ ...prev, rol: 'organizador' }))}
-                      className="p-3 rounded-4 border text-center transition-all cursor-pointer"
-                      style={{
-                        cursor: 'pointer',
-                        background: formData.rol === 'organizador' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                        borderColor: formData.rol === 'organizador' ? '#f59e0b' : 'rgba(255, 255, 255, 0.08)'
-                      }}
-                    >
-                      <i className="bi bi-briefcase fs-4 text-warning"></i>
-                      <div className="fw-bold text-white mt-1 small">Organizador</div>
-                      <small className="text-dim d-block" style={{ fontSize: '0.7rem' }}>Publicar eventos</small>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -197,12 +166,12 @@ export default function RegistroPage() {
               </div>
 
               <button type="submit" className="btn-modern-primary w-100 py-2">
-                Crear Mi Cuenta
+                Crear Mi Cuenta de Comprador
               </button>
             </form>
 
             <div className="text-center mt-4">
-              <span className="small text-muted">¿Ya estás registrado? </span>
+              <span className="small text-muted">¿Ya tienes cuenta? </span>
               <Link to="/login" className="small fw-bold text-info text-decoration-none">
                 Inicia sesión aquí
               </Link>

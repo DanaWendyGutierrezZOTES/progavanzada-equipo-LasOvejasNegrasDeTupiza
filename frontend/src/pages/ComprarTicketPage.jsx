@@ -1,6 +1,6 @@
 // ========================================================
 // PÁGINA: COMPRARTICKETPAGE (DISEÑO MODERNO 2026)
-// Proceso de compra en 3 pasos con cálculo interactivo
+// Proceso de compra con moneda en Bolivianos (Bs)
 // ========================================================
 
 import React, { useState, useEffect } from 'react';
@@ -105,7 +105,7 @@ export default function ComprarTicketPage() {
 
             <h2 className="fw-extrabold text-white mb-1">Confirmar Entradas</h2>
             <p className="text-muted small mb-4">
-              Estás adquiriendo entradas oficiales para <strong className="text-light">{evento.nombre}</strong>
+              Estás adquiriendo entradas oficiales para <strong className="text-light">{evento.nombre}</strong> ({evento.lugar})
             </p>
 
             {error && (
@@ -120,7 +120,7 @@ export default function ComprarTicketPage() {
               <div className="p-4 rounded-4 mb-4 border" style={{ background: 'rgba(255, 255, 255, 0.03)', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
                 <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
                   <div>
-                    <span className="badge bg-primary rounded-pill mb-1">Tipo de Entrada</span>
+                    <span className="badge bg-primary rounded-pill mb-1">Categoría Seleccionada</span>
                     <h4 className="fw-bold text-white mb-0">{tipoTicket.nombre}</h4>
                     <small className="text-emerald d-block mt-1">
                       <i className="bi bi-check2-circle me-1"></i> {tipoTicket.cantidad_disponible} unidades disponibles
@@ -129,7 +129,7 @@ export default function ComprarTicketPage() {
                   <div className="text-lg-end">
                     <span className="text-dim small d-block">PRECIO UNITARIO</span>
                     <span className="fs-4 fw-bold" style={{ color: '#38bdf8' }}>
-                      ${precioUnitario.toLocaleString('es-ES')}
+                      Bs. {precioUnitario.toLocaleString('es-ES')}
                     </span>
                   </div>
                 </div>
@@ -197,35 +197,35 @@ export default function ComprarTicketPage() {
                   />
                 </div>
                 <div className="col-md-12">
-                  <label className="form-label small fw-semibold text-muted">Teléfono de Contacto (Opcional)</label>
+                  <label className="form-label small fw-semibold text-muted">Teléfono / WhatsApp</label>
                   <input
                     type="text"
                     className="form-control form-control-modern"
-                    placeholder="+56 9 1234 5678"
+                    placeholder="+591 71234567"
                     value={telefonoComprador}
                     onChange={(e) => setTelefonoComprador(e.target.value)}
                   />
                 </div>
               </div>
 
-              {/* Desglose y Total */}
+              {/* Desglose y Total en Bolivianos */}
               <div className="p-4 rounded-4 border mt-4" style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
                 <div className="d-flex justify-content-between mb-2 small text-muted">
-                  <span>Subtotal ({cantidad} x ${precioUnitario.toLocaleString('es-ES')}):</span>
-                  <span className="text-light">${totalPagar.toLocaleString('es-ES')}</span>
+                  <span>Subtotal ({cantidad} x Bs. {precioUnitario.toLocaleString('es-ES')}):</span>
+                  <span className="text-light">Bs. {totalPagar.toLocaleString('es-ES')}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-3 small text-muted">
-                  <span>Cargo por servicio simulado:</span>
-                  <span className="text-emerald fw-semibold">$0 (Gratis)</span>
+                  <span>Comisión por servicio:</span>
+                  <span className="text-emerald fw-semibold">Bs. 0 (Gratis)</span>
                 </div>
                 <div className="d-flex justify-content-between align-items-center pt-3 border-top" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
                   <div>
-                    <span className="fs-5 fw-bold text-white d-block">Total Final:</span>
-                    <small className="text-muted">Pase digital generado al instante</small>
+                    <span className="fs-5 fw-bold text-white d-block">Total a Pagar:</span>
+                    <small className="text-muted">Pase digital con código QR al instante</small>
                   </div>
                   <div className="text-end">
                     <span className="display-6 fw-extrabold" style={{ color: '#38bdf8' }}>
-                      ${totalPagar.toLocaleString('es-ES')}
+                      Bs. {totalPagar.toLocaleString('es-ES')}
                     </span>
                   </div>
                 </div>
@@ -236,9 +236,9 @@ export default function ComprarTicketPage() {
                   className="btn-modern-primary w-100 py-3 mt-4 fs-6"
                 >
                   {procesando ? (
-                    <span>Generando Entrada Digital...</span>
+                    <span>Generando Pase Digital...</span>
                   ) : (
-                    <span><i className="bi bi-shield-check"></i> Confirmar y Obtener Pase Digital</span>
+                    <span><i className="bi bi-shield-check"></i> Pagar Bs. {totalPagar.toLocaleString('es-ES')} y Obtener Pase</span>
                   )}
                 </button>
               </div>

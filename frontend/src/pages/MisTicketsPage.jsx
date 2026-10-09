@@ -1,6 +1,6 @@
 // ========================================================
 // PÁGINA: MISTICKETSPAGE (DISEÑO MODERNO 2026)
-// Historial de pases digitales adquiridos con diseño de tarjetas
+// Historial de pases digitales adquiridos con precios en Bs
 // ========================================================
 
 import React, { useState, useEffect } from 'react';
@@ -67,7 +67,7 @@ export default function MisTicketsPage() {
                     </div>
                     <div className="text-end">
                       <small className="text-dim d-block" style={{ fontSize: '0.7rem' }}>TOTAL PAGADO</small>
-                      <strong className="text-emerald">${Number(compra.total).toLocaleString('es-ES')}</strong>
+                      <strong className="text-emerald">Bs. {Number(compra.total).toLocaleString('es-ES')}</strong>
                     </div>
                   </div>
                 </div>

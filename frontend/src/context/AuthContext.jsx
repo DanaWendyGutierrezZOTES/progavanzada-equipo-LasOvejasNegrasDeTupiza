@@ -1,24 +1,19 @@
 // ========================================================
 // CONTEXTO DE AUTENTICACIÓN (AuthContext.jsx)
-// Permite saber en cualquier componente qué usuario ha iniciado sesión.
-// Es nativo de React (no requiere librerías complejas como Redux).
+// Manejo de sesiones y control de roles (Admin, Organizador, Comprador)
 // ========================================================
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { obtenerUsuarios, registrarUsuario } from '../services/storage';
 
-// 1. Creamos el contexto
 const AuthContext = createContext();
 
-// 2. Proveedor que envuelve a la aplicación
 export function AuthProvider({ children }) {
-  // Estado con el usuario logueado actualmente
   const [usuario, setUsuario] = useState(() => {
     const sesionGuardada = localStorage.getItem('ticketera_sesion_activa');
     return sesionGuardada ? JSON.parse(sesionGuardada) : null;
   });
 
-  // Guardamos la sesión en el almacenamiento local cuando cambia el usuario
   useEffect(() => {
     if (usuario) {
       localStorage.setItem('ticketera_sesion_activa', JSON.stringify(usuario));
@@ -27,7 +22,7 @@ export function AuthProvider({ children }) {
     }
   }, [usuario]);
 
-  // Función para Iniciar Sesión
+  // Iniciar Sesión
   const login = (username, password) => {
     const usuarios = obtenerUsuarios();
     const encontrado = usuarios.find(
@@ -42,19 +37,35 @@ export function AuthProvider({ children }) {
     return encontrado;
   };
 
-  // Función para Cerrar Sesión
+  // Cerrar Sesión
   const logout = () => {
     setUsuario(null);
   };
 
-  // Función para Registrar Usuario
+  // Registro Público: SOLO permite crear cuentas de rol 'comprador'
   const registro = (datos) => {
-    const nuevo = registrarUsuario(datos);
+    const datosComprador = {
+      ...datos,
+      rol: 'comprador' // Seguridad: el registro público siempre es comprador
+    };
+    const nuevo = registrarUsuario(datosComprador);
     setUsuario(nuevo);
     return nuevo;
   };
 
-  // Función para cambio rápido de usuario durante presentaciones/pruebas
+  // Registro Privado: Solo el Administrador puede registrar Organizadores
+  const registrarOrganizadorPorAdmin = (datos) => {
+    if (usuario?.rol !== 'admin' && usuario?.username !== 'admin') {
+      throw new Error('Solo el Administrador tiene permiso para crear Organizadores.');
+    }
+    const datosOrganizador = {
+      ...datos,
+      rol: 'organizador'
+    };
+    return registrarUsuario(datosOrganizador);
+  };
+
+  // Cambio rápido para demostraciones y defensa
   const cambiarUsuarioRapido = (username) => {
     const usuarios = obtenerUsuarios();
     const u = usuarios.find(item => item.username === username);
@@ -63,17 +74,19 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Comprobar si es organizador
-  const esOrganizador = usuario?.rol === 'organizador';
+  const esAdmin = usuario?.rol === 'admin';
+  const esOrganizador = usuario?.rol === 'organizador' || usuario?.rol === 'admin';
 
   return (
     <AuthContext.Provider
       value={{
         usuario,
+        esAdmin,
         esOrganizador,
         login,
         logout,
         registro,
+        registrarOrganizadorPorAdmin,
         cambiarUsuarioRapido
       }}
     >
@@ -82,11 +95,10 @@ export function AuthProvider({ children }) {
   );
 }
 
-// 3. Hook personalizado para usar el contexto fácilmente
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth debe ser utilizado dentro de un AuthProvider');
+    throw new Error('useAuth debe usarse dentro de AuthProvider');
   }
   return context;
 }

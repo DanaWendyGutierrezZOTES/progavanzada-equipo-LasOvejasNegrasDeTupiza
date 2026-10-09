@@ -1,25 +1,22 @@
 // ========================================================
 // COMPONENTE: EVENTCARD (DISEÑO 2026 MODERNO)
 // Tarjeta moderna con efecto zoom en imagen, badges con glassmorphism,
-// indicador de disponibilidad y botón de compra con glow
+// indicador de disponibilidad y precio en Bolivianos (Bs)
 // ========================================================
 
 import React from 'react';
 import { Link } from 'react-router-dom';
 
 export default function EventCard({ evento }) {
-  // Calculamos los cupos disponibles sumando los tipos de tickets
   const cuposDisponibles = evento.tipos_ticket
     ? evento.tipos_ticket.reduce((total, t) => total + (Number(t.cantidad_disponible) || 0), 0)
     : 0;
 
-  // Calculamos el precio menor disponible para mostrar "Desde $X"
   const precios = evento.tipos_ticket && evento.tipos_ticket.length > 0
     ? evento.tipos_ticket.map(t => Number(t.precio))
     : [evento.precio_base || 0];
   const precioMinimo = Math.min(...precios);
 
-  // Formateo de fecha legible (ej: 15 Nov, 2026)
   const formatearFecha = (fechaStr) => {
     try {
       const fecha = new Date(fechaStr + 'T00:00:00');
@@ -89,13 +86,13 @@ export default function EventCard({ evento }) {
             {evento.descripcion}
           </p>
 
-          {/* Footer de Tarjeta: Precio y Botón Moderno */}
+          {/* Footer de Tarjeta: Precio en Bs y Botón Moderno */}
           <div className="pt-3 border-top d-flex justify-content-between align-items-center mt-auto"
                style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
             <div>
               <span className="text-dim small d-block" style={{ fontSize: '0.75rem' }}>DESDE</span>
               <span className="fs-5 fw-bold" style={{ color: '#38bdf8' }}>
-                ${Number(precioMinimo).toLocaleString('es-ES')}
+                Bs. {Number(precioMinimo).toLocaleString('es-ES')}
               </span>
             </div>
 

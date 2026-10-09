@@ -1,6 +1,6 @@
 // ========================================================
 // PÁGINA: FORMEVENTOPAGE (DISEÑO MODERNO 2026)
-// Formulario para crear o editar eventos con validaciones limpias
+// Formulario para crear o editar eventos con precios en Bolivianos (Bs)
 // ========================================================
 
 import React, { useState, useEffect } from 'react';
@@ -21,10 +21,10 @@ export default function FormEventoPage() {
     hora: '19:00',
     lugar: '',
     imagen_url: '',
-    precio_base: 15000,
+    precio_base: 150,
     cupo_total: 500,
     ticket_nombre: 'General',
-    ticket_precio: 15000,
+    ticket_precio: 150,
     ticket_cupo: 500
   });
 
@@ -120,7 +120,7 @@ export default function FormEventoPage() {
               {esEdicion ? `Editar Evento: ${formData.nombre}` : 'Publicar Nuevo Evento'}
             </h2>
             <p className="text-muted small mb-4">
-              Completa la ficha técnica para abrir la venta de entradas en vivo
+              Completa la ficha técnica para abrir la venta de entradas en Bolivianos (Bs)
             </p>
 
             {error && (
@@ -138,7 +138,7 @@ export default function FormEventoPage() {
                   name="nombre"
                   required
                   className="form-control form-control-modern"
-                  placeholder="Ej: Sunset Festival 2026"
+                  placeholder="Ej: Sunset Festival Bolivia 2026"
                   value={formData.nombre}
                   onChange={handleChange}
                 />
@@ -189,7 +189,7 @@ export default function FormEventoPage() {
                   name="lugar"
                   required
                   className="form-control form-control-modern"
-                  placeholder="Ej: Estadio Monumental, Sala SCD..."
+                  placeholder="Ej: Estadio Hernando Siles, La Paz..."
                   value={formData.lugar}
                   onChange={handleChange}
                 />
@@ -210,7 +210,7 @@ export default function FormEventoPage() {
 
               <div className="row g-3 mb-4">
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Precio Base Referencial ($) *</label>
+                  <label className="form-label small fw-semibold text-muted">Precio Base Referencial (Bs.) *</label>
                   <input
                     type="number"
                     name="precio_base"
@@ -252,7 +252,7 @@ export default function FormEventoPage() {
                       />
                     </div>
                     <div className="col-md-4">
-                      <label className="small text-dim">Precio ($)</label>
+                      <label className="small text-dim">Precio (Bs.)</label>
                       <input
                         type="number"
                         name="ticket_precio"
