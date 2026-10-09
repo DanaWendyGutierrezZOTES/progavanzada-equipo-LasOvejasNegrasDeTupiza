@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }} - TicketEventos{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <a href="{% if evento %}{% url 'detalle_evento' evento.pk %}{% else %}{% url 'panel_organizador' %}{% endif %}" class="btn btn-outline-secondary btn-sm mb-4">
+                <i class="bi bi-arrow-left me-1"></i> Regresar
+            </a>
+
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden bg-white">
+                <div class="card-header bg-dark text-white p-4">
+                    <h3 class="fw-bold mb-1">
+                        <i class="bi bi-calendar-event me-2 text-primary"></i>{{ titulo }}
+                    </h3>
+                    <p class="text-light opacity-75 small mb-0">Completa la información principal para tu concierto o evento.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Datos Principales -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label for="{{ form.nombre.id_for_label }}" class="form-label fw-bold">Nombre del Evento *</label>
+                                {{ form.nombre }}
+                                {% if form.nombre.errors %}
+                                    <div class="text-danger small mt-1">{{ form.nombre.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12">
+                                <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">Descripción Detallada *</label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                    <div class="text-danger small mt-1">{{ form.descripcion.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="{{ form.fecha.id_for_label }}" class="form-label fw-bold">Fecha del Evento *</label>
+                                {{ form.fecha }}
+                                {% if form.fecha.errors %}
+                                    <div class="text-danger small mt-1">{{ form.fecha.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="{{ form.hora.id_for_label }}" class="form-label fw-bold">Hora de Inicio *</label>
+                                {{ form.hora }}
+                                {% if form.hora.errors %}
+                                    <div class="text-danger small mt-1">{{ form.hora.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12">
+                                <label for="{{ form.lugar.id_for_label }}" class="form-label fw-bold">Lugar o Recinto *</label>
+                                {{ form.lugar }}
+                                {% if form.lugar.errors %}
+                                    <div class="text-danger small mt-1">{{ form.lugar.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="{{ form.precio_base.id_for_label }}" class="form-label fw-bold">Precio Base Referencial ($) *</label>
+                                {{ form.precio_base }}
+                                {% if form.precio_base.errors %}
+                                    <div class="text-danger small mt-1">{{ form.precio_base.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="{{ form.cupo_total.id_for_label }}" class="form-label fw-bold">Cupo Total del Recinto *</label>
+                                {{ form.cupo_total }}
+                                {% if form.cupo_total.errors %}
+                                    <div class="text-danger small mt-1">{{ form.cupo_total.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Imagen -->
+                        <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                            <h5 class="fw-bold mb-3"><i class="bi bi-image text-primary me-2"></i>Imagen o Póster del Evento</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.imagen.id_for_label }}" class="form-label fw-semibold small">Subir archivo de imagen</label>
+                                    {{ form.imagen }}
+                                    <div class="form-text small">{{ form.imagen.help_text }}</div>
+                                    {% if form.imagen.errors %}
+                                        <div class="text-danger small mt-1">{{ form.imagen.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.imagen_url.id_for_label }}" class="form-label fw-semibold small">O ingresar URL de imagen externa</label>
+                                    {{ form.imagen_url }}
+                                    <div class="form-text small">{{ form.imagen_url.help_text }}</div>
+                                    {% if form.imagen_url.errors %}
+                                        <div class="text-danger small mt-1">{{ form.imagen_url.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Ticket Inicial (solo en creación) -->
+                        {% if not evento %}
+                            <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                                <h5 class="fw-bold mb-2"><i class="bi bi-ticket-perforated text-primary me-2"></i>Entrada Inicial (Opcional)</h5>
+                                <p class="text-muted small mb-3">Puedes definir tu primera categoría de entradas ahora o configurarla después en la sección de tickets.</p>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-semibold">Nombre de Entrada</label>
+                                        <input type="text" name="nombre_ticket" class="form-control" placeholder="Ej. General" value="General">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-semibold">Precio ($)</label>
+                                        <input type="number" step="0.01" name="precio_ticket" class="form-control" placeholder="Ej. 15000">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-semibold">Cupo disponible</label>
+                                        <input type="number" name="cupo_ticket" class="form-control" placeholder="Ej. 200">
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                            <a href="{% if evento %}{% url 'detalle_evento' evento.pk %}{% else %}{% url 'panel_organizador' %}{% endif %}" class="btn btn-outline-secondary px-4">
+                                Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary fw-bold px-4">
+                                <i class="bi bi-check2-circle me-1"></i> {% if evento %}Guardar Cambios{% else %}Publicar Evento{% endif %}
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

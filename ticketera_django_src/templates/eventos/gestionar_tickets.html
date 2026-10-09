@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestionar Tickets: {{ evento.nombre }} - TicketEventos{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a href="{% url 'detalle_evento' evento.pk %}" class="btn btn-outline-secondary btn-sm mb-2">
+                <i class="bi bi-arrow-left me-1"></i> Ver Evento
+            </a>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-ticket-perforated-fill text-primary me-2"></i>Gestionar Entradas del Evento
+            </h2>
+            <p class="text-muted small mb-0">Evento: <strong>{{ evento.nombre }}</strong> (Fecha: {{ evento.fecha|date:"d M Y" }})</p>
+        </div>
+        <a href="{% url 'panel_organizador' %}" class="btn btn-outline-primary btn-sm fw-semibold">
+            <i class="bi bi-speedometer2 me-1"></i> Ir al Panel
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Columna Izquierda: Lista de Tipos de Ticket -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Tipos de Entradas Creadas</h5>
+                    <span class="badge bg-primary">{{ tipos_ticket|length }} categoría{{ tipos_ticket|length|pluralize:"s" }}</span>
+                </div>
+
+                <div class="card-body p-0">
+                    {% if tipos_ticket %}
+                        <div class="list-group list-group-flush">
+                            {% for ticket in tipos_ticket %}
+                                <div class="list-group-item p-4 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="fw-bold mb-1">{{ ticket.nombre }}</h5>
+                                        <div class="text-muted small">
+                                            <span class="me-3"><i class="bi bi-cash me-1 text-success"></i>Precio: <strong>${{ ticket.precio|floatformat:0 }}</strong></span>
+                                            <span class="me-3"><i class="bi bi-box me-1 text-primary"></i>Cupo Total: <strong>{{ ticket.cantidad_total }}</strong></span>
+                                            <span><i class="bi bi-check2-circle me-1 text-info"></i>Disponibles: <strong>{{ ticket.cantidad_disponible }}</strong></span>
+                                        </div>
+                                        <div class="mt-2">
+                                            <span class="badge bg-light text-dark border">
+                                                Vendidos: {{ ticket.cantidad_vendida }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        {% if ticket.cantidad_vendida == 0 %}
+                                            <form method="POST" action="{% url 'eliminar_ticket' ticket.pk %}" onsubmit="return confirm('¿Seguro que deseas eliminar este tipo de ticket?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar este tipo de ticket">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <button class="btn btn-outline-secondary btn-sm" disabled title="No se puede borrar porque ya tiene tickets vendidos">
+                                                <i class="bi bi-lock-fill"></i> Con ventas
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-ticket-perforated text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="fw-bold mt-3">Sin tipos de entrada</h5>
+                            <p class="text-muted small">Utiliza el formulario contiguo para crear la primera entrada para este evento.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Formulario para Agregar Nuevo Tipo -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-plus-circle-fill text-primary me-2"></i>Agregar Nueva Categoría
+                </h5>
+                <p class="text-muted small mb-4">Crea una nueva opción de entrada (por ejemplo: VIP, Palco, Preventa 2, Cancha General).</p>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label fw-bold small">Nombre de la Entrada</label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="text-danger small mt-1">{{ form.nombre.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.precio.id_for_label }}" class="form-label fw-bold small">Precio Unitario ($)</label>
+                        {{ form.precio }}
+                        {% if form.precio.errors %}
+                            <div class="text-danger small mt-1">{{ form.precio.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.cantidad_disponible.id_for_label }}" class="form-label fw-bold small">Cantidad / Cupos Asignados</label>
+                        {{ form.cantidad_disponible }}
+                        {% if form.cantidad_disponible.errors %}
+                            <div class="text-danger small mt-1">{{ form.cantidad_disponible.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
+                        <i class="bi bi-plus-lg me-1"></i> Guardar Categoría de Ticket
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
