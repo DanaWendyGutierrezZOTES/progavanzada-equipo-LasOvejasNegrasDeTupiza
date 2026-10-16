@@ -19,7 +19,23 @@ export function obtenerEventos() {
   const guardados = localStorage.getItem(CLAVE_EVENTOS);
   if (guardados) {
     try {
-      return JSON.parse(guardados);
+      const lista = JSON.parse(guardados);
+      let actualizado = false;
+      // Sincronizar o enriquecer con estadios y sectores geográficos iniciales
+      EVENTOS_INICIALES.forEach(eventoDefecto => {
+        const index = lista.findIndex(e => Number(e.id) === Number(eventoDefecto.id));
+        if (index === -1) {
+          lista.push(eventoDefecto);
+          actualizado = true;
+        } else if (!lista[index].sectores_geograficos || !lista[index].estadio_nombre) {
+          lista[index] = { ...eventoDefecto, ...lista[index], sectores_geograficos: eventoDefecto.sectores_geograficos, estadio_nombre: eventoDefecto.estadio_nombre, capacidad_estadio: eventoDefecto.capacidad_estadio, lat: eventoDefecto.lat, lng: eventoDefecto.lng };
+          actualizado = true;
+        }
+      });
+      if (actualizado) {
+        localStorage.setItem(CLAVE_EVENTOS, JSON.stringify(lista));
+      }
+      return lista;
     } catch {
       // En caso de error de parseo, reinicia a iniciales
     }
