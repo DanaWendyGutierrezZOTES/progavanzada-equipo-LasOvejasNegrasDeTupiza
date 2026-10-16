@@ -35,8 +35,8 @@ export default function TicketDetallePage() {
 
   return (
     <div className="container py-5">
-      {/* Mensaje de Confirmación */}
-      <div className="text-center mb-4">
+      {/* Mensaje de Confirmación (Oculto al Imprimir) */}
+      <div className="text-center mb-4 d-print-none">
         <div className="d-inline-flex p-3 rounded-circle mb-3"
              style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#34d399' }}>
           <i className="bi bi-check2-circle fs-1"></i>
@@ -134,13 +134,13 @@ export default function TicketDetallePage() {
         </div>
       </div>
 
-      {/* Botones de Acción */}
-      <div className="d-flex flex-wrap justify-content-center gap-3">
-        <button onClick={handleImprimir} className="btn-modern-outline">
-          <i className="bi bi-printer"></i> Imprimir / Guardar PDF
+      {/* Botones de Acción (Ocultos al Imprimir) */}
+      <div className="d-flex flex-wrap justify-content-center gap-3 d-print-none">
+        <button onClick={handleImprimir} className="btn-modern-primary">
+          <i className="bi bi-printer me-1"></i> Imprimir / Guardar PDF (1 Hoja)
         </button>
-        <Link to="/mis-tickets" className="btn-modern-primary text-decoration-none">
-          <i className="bi bi-ticket-detailed"></i> Ver Mis Entradas
+        <Link to="/mis-tickets" className="btn-modern-outline text-decoration-none">
+          <i className="bi bi-ticket-detailed me-1"></i> Ver Mis Entradas
         </Link>
         <Link to="/" className="btn-modern-outline text-decoration-none">
           Explorar Más

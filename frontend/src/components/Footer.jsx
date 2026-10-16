@@ -7,7 +7,7 @@ import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className="mt-auto py-4 border-top" style={{ background: 'rgba(9, 13, 22, 0.95)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
+    <footer className="mt-auto py-4 border-top d-print-none" style={{ background: 'rgba(9, 13, 22, 0.95)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
       <div className="container text-center">
         <div className="mb-2 d-flex align-items-center justify-content-center gap-2">
           <span className="p-1 rounded-2" style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>

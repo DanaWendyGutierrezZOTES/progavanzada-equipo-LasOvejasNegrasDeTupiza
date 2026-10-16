@@ -21,7 +21,7 @@ export default function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark navbar-modern py-3 sticky-top">
+    <nav className="navbar navbar-expand-lg navbar-dark navbar-modern py-3 sticky-top d-print-none">
       <div className="container">
         {/* Logo Moderno con Degradado e Icono Neón */}
         <Link className="navbar-brand-modern d-flex align-items-center gap-2 text-decoration-none" to="/">

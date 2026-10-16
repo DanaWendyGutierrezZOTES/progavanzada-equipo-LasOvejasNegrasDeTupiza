@@ -414,3 +414,119 @@ body {
   animation: radar-pulse 2s infinite;
 }
 
+/* ========================================================
+   REGLAS DE IMPRESIÓN OFICIALES (1 SOLA HOJA DE PAPEL)
+   Optimizado para impresoras (Epson, HP, etc.) y Guardar como PDF
+======================================================== */
+@media print {
+  @page {
+    size: auto;
+    margin: 8mm; /* Margen para asegurar que entre en 1 sola hoja */
+  }
+
+  html, body {
+    background: #ffffff !important;
+    background-image: none !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ocultar barra superior, pie de página, botones y títulos no impresos */
+  nav,
+  footer,
+  .d-print-none,
+  .no-print,
+  button,
+  .btn,
+  .navbar-modern {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  #root {
+    min-height: auto !important;
+    display: block !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+  }
+
+  /* El Boleto Digital: Evita cortes entre hojas */
+  .ticket-pass {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    max-width: 680px !important;
+    width: 96% !important;
+    margin: 10px auto !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 2px solid #0f172a !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .ticket-pass-header {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
+    color: #ffffff !important;
+    padding: 1.5rem !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .ticket-pass-header h3 {
+    color: #ffffff !important;
+    font-size: 1.5rem !important;
+  }
+
+  .ticket-pass-header p {
+    color: #e2e8f0 !important;
+  }
+
+  .ticket-pass-body {
+    padding: 1.5rem !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  .ticket-pass-body .text-white {
+    color: #0f172a !important;
+  }
+
+  .ticket-pass-body .text-dim,
+  .ticket-pass-body .text-muted {
+    color: #475569 !important;
+  }
+
+  .ticket-pass-body .border-start {
+    border-color: #cbd5e1 !important;
+  }
+
+  .ticket-notch-divider::before,
+  .ticket-notch-divider::after {
+    background-color: #ffffff !important;
+    box-shadow: none !important;
+    border: 2px solid #0f172a !important;
+  }
+
+  .ticket-dashed-separator {
+    border-bottom: 2px dashed #94a3b8 !important;
+  }
+}
+
+
