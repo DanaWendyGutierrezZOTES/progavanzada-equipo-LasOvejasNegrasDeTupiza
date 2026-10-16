@@ -92,17 +92,24 @@ export default function Navbar() {
           {/* Selector Rápido de Demo (ideal para defensa y presentación) */}
           <div className="d-flex align-items-center gap-1 p-1 rounded-pill my-2 my-lg-0 me-lg-3"
                style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <span className="small text-muted px-2 d-none d-xl-inline">Demo:</span>
+            <span className="small text-muted px-2 d-none d-xl-inline">Rol:</span>
+            <button
+              onClick={() => cambiarUsuarioRapido('admin')}
+              className={`btn btn-sm rounded-pill px-2 py-1 fw-semibold ${usuario?.username === 'admin' ? 'btn-modern-primary text-white' : 'btn-link text-muted text-decoration-none'}`}
+              title="Cambiar a rol Administrador"
+            >
+              Admin
+            </button>
             <button
               onClick={() => cambiarUsuarioRapido('organizador')}
-              className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold ${usuario?.username === 'organizador' ? 'btn-modern-primary text-white' : 'btn-link text-muted text-decoration-none'}`}
+              className={`btn btn-sm rounded-pill px-2 py-1 fw-semibold ${usuario?.username === 'organizador' ? 'btn-modern-primary text-white' : 'btn-link text-muted text-decoration-none'}`}
               title="Cambiar a rol Organizador"
             >
               Organizador
             </button>
             <button
               onClick={() => cambiarUsuarioRapido('comprador')}
-              className={`btn btn-sm rounded-pill px-3 py-1 fw-semibold ${usuario?.username === 'comprador' ? 'btn-modern-primary text-white' : 'btn-link text-muted text-decoration-none'}`}
+              className={`btn btn-sm rounded-pill px-2 py-1 fw-semibold ${usuario?.username === 'comprador' ? 'btn-modern-primary text-white' : 'btn-link text-muted text-decoration-none'}`}
               title="Cambiar a rol Comprador"
             >
               Comprador
@@ -115,17 +122,23 @@ export default function Navbar() {
               <div className="d-flex align-items-center gap-3">
                 <div className="d-flex align-items-center gap-2">
                   <div className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                       style={{ width: '38px', height: '38px', background: esOrganizador ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #6366f1, #3b82f6)' }}>
+                       style={{
+                         width: '38px',
+                         height: '38px',
+                         background: usuario.rol === 'admin'
+                           ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+                           : (esOrganizador ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #6366f1, #3b82f6)')
+                       }}>
                     {usuario.username.charAt(0).toUpperCase()}
                   </div>
                   <div className="text-start d-none d-sm-block">
                     <div className="fw-bold small text-white line-clamp-1">{usuario.nombre || usuario.username}</div>
-                    <span className={`badge rounded-pill ${esOrganizador ? 'bg-warning text-dark' : 'bg-primary'}`} style={{ fontSize: '0.65rem' }}>
-                      {usuario.rol}
+                    <span className={`badge rounded-pill ${usuario.rol === 'admin' ? 'bg-danger text-white' : (esOrganizador ? 'bg-warning text-dark' : 'bg-primary')}`} style={{ fontSize: '0.65rem' }}>
+                      {usuario.rol.toUpperCase()}
                     </span>
                   </div>
                 </div>
-                <button onClick={handleLogout} className="btn btn-modern-outline btn-sm py-1 px-3">
+                <button onClick={handleLogout} className="btn btn-modern-outline btn-sm py-1 px-3" title="Cerrar sesión">
                   <i className="bi bi-box-arrow-right"></i>
                 </button>
               </div>

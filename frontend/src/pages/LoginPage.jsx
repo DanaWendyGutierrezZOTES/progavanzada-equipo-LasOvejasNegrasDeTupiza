@@ -21,7 +21,7 @@ export default function LoginPage() {
 
     try {
       const u = login(username, password);
-      if (u.rol === 'organizador') {
+      if (u.rol === 'organizador' || u.rol === 'admin') {
         navigate('/organizador/panel');
       } else {
         navigate('/');
@@ -36,7 +36,7 @@ export default function LoginPage() {
     setPassword(pass);
     try {
       const u = login(user, pass);
-      if (u.rol === 'organizador') {
+      if (u.rol === 'organizador' || u.rol === 'admin') {
         navigate('/organizador/panel');
       } else {
         navigate('/');
@@ -54,8 +54,8 @@ export default function LoginPage() {
                    style={{ width: '56px', height: '56px', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
                 <i className="bi bi-person-fill fs-3"></i>
               </div>
-              <h3 className="fw-extrabold text-white mb-1">Bienvenido</h3>
-              <p className="text-muted small">Ingresa tus credenciales para acceder</p>
+              <h3 className="fw-extrabold text-white mb-1">Iniciar Sesión</h3>
+              <p className="text-muted small">Ingresa tus credenciales para acceder a la plataforma</p>
             </div>
 
             {error && (
@@ -72,7 +72,7 @@ export default function LoginPage() {
                   type="text"
                   required
                   className="form-control form-control-modern"
-                  placeholder="organizador o comprador"
+                  placeholder="admin, organizador o comprador"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
@@ -91,27 +91,36 @@ export default function LoginPage() {
               </div>
 
               <button type="submit" className="btn-modern-primary w-100 py-2">
-                Iniciar Sesión
+                <i className="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
               </button>
             </form>
 
             {/* Accesos rápidos para defensa y pruebas */}
             <div className="mt-4 pt-4 border-top" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
-              <span className="small text-dim d-block text-center mb-3">Acceso instantáneo para evaluación:</span>
+              <span className="small text-dim d-block text-center mb-3 fw-semibold">
+                Acceso con 1 Clic para la Evaluación:
+              </span>
               <div className="d-grid gap-2">
+                <button
+                  type="button"
+                  onClick={() => autoCompletar('admin', '123')}
+                  className="btn btn-modern-outline btn-sm py-2 text-danger d-flex align-items-center justify-content-center gap-2"
+                >
+                  <i className="bi bi-shield-lock-fill"></i> Iniciar como Administrador (Admin)
+                </button>
                 <button
                   type="button"
                   onClick={() => autoCompletar('organizador', '123')}
                   className="btn btn-modern-outline btn-sm py-2 text-warning d-flex align-items-center justify-content-center gap-2"
                 >
-                  <i className="bi bi-briefcase"></i> Iniciar como Organizador (Carlos)
+                  <i className="bi bi-briefcase-fill"></i> Iniciar como Organizador (Carlos)
                 </button>
                 <button
                   type="button"
                   onClick={() => autoCompletar('comprador', '123')}
                   className="btn btn-modern-outline btn-sm py-2 text-info d-flex align-items-center justify-content-center gap-2"
                 >
-                  <i className="bi bi-person"></i> Iniciar como Comprador (Valeria)
+                  <i className="bi bi-person-fill"></i> Iniciar como Comprador (Valeria)
                 </button>
               </div>
             </div>

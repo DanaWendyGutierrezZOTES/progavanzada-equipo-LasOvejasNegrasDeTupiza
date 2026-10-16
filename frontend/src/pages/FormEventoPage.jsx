@@ -72,6 +72,10 @@ export default function FormEventoPage() {
         fecha: formData.fecha,
         hora: formData.hora,
         lugar: formData.lugar,
+        estadio_nombre: formData.estadio_nombre || formData.lugar,
+        ciudad: formData.ciudad || 'La Paz',
+        lat: formData.lat || -16.4994,
+        lng: formData.lng || -68.1225,
         imagen_url: formData.imagen_url || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80',
         precio_base: Number(formData.precio_base),
         cupo_total: Number(formData.cupo_total)
@@ -182,8 +186,37 @@ export default function FormEventoPage() {
                 </div>
               </div>
 
+              {/* Selector de Estadio Oficial con Geolocalización */}
               <div className="mb-3">
-                <label className="form-label small fw-semibold text-muted">Lugar / Recinto / Estadio *</label>
+                <label className="form-label small fw-semibold text-muted d-flex justify-content-between">
+                  <span><i className="bi bi-geo-alt-fill text-danger me-1"></i> Seleccionar Estadio / Recinto (Bolivia)</span>
+                  <span className="text-info small">Geolocalización Automática Google Maps</span>
+                </label>
+                <select
+                  className="form-select form-control-modern mb-2"
+                  onChange={(e) => {
+                    const sel = e.target.value;
+                    if (sel === 'siles') {
+                      setFormData(prev => ({ ...prev, lugar: 'Estadio Hernando Siles, La Paz', estadio_nombre: 'Estadio Olímpico Hernando Siles', ciudad: 'La Paz', lat: -16.4994, lng: -68.1225 }));
+                    } else if (sel === 'tahuichi') {
+                      setFormData(prev => ({ ...prev, lugar: 'Estadio Ramón Tahuichi Aguilera, Santa Cruz', estadio_nombre: 'Estadio Ramón Tahuichi Aguilera', ciudad: 'Santa Cruz', lat: -17.7972, lng: -63.1895 }));
+                    } else if (sel === 'capriles') {
+                      setFormData(prev => ({ ...prev, lugar: 'Estadio Félix Capriles, Cochabamba', estadio_nombre: 'Estadio Sudamericano Félix Capriles', ciudad: 'Cochabamba', lat: -17.3792, lng: -66.1614 }));
+                    } else if (sel === 'chuquiago') {
+                      setFormData(prev => ({ ...prev, lugar: 'Campo Ferial Chuquiago Marka, La Paz', estadio_nombre: 'Campo Ferial Chuquiago Marka', ciudad: 'La Paz', lat: -16.5397, lng: -68.0892 }));
+                    } else if (sel === 'teatro') {
+                      setFormData(prev => ({ ...prev, lugar: 'Teatro Municipal Alberto Saavedra Pérez, La Paz', estadio_nombre: 'Teatro Municipal Alberto Saavedra Pérez', ciudad: 'La Paz', lat: -16.4952, lng: -68.1362 }));
+                    }
+                  }}
+                >
+                  <option value="">-- Elige un estadio preconfigurado o escribe abajo --</option>
+                  <option value="siles">🏟️ Estadio Hernando Siles (La Paz - Cap. 41.143)</option>
+                  <option value="tahuichi">🏟️ Estadio Ramón Tahuichi Aguilera (Santa Cruz - Cap. 38.500)</option>
+                  <option value="capriles">🏟️ Estadio Félix Capriles (Cochabamba - Cap. 32.000)</option>
+                  <option value="chuquiago">🎪 Campo Ferial Chuquiago Marka (La Paz - Cap. 10.000)</option>
+                  <option value="teatro">🎭 Teatro Municipal Alberto Saavedra Pérez (La Paz - Cap. 650)</option>
+                </select>
+
                 <input
                   type="text"
                   name="lugar"
@@ -193,6 +226,12 @@ export default function FormEventoPage() {
                   value={formData.lugar}
                   onChange={handleChange}
                 />
+                {formData.lat && (
+                  <div className="small text-info mt-1 d-flex align-items-center gap-1">
+                    <i className="bi bi-pin-map-fill text-danger"></i>
+                    Coordenadas GPS asignadas: {formData.lat}, {formData.lng}
+                  </div>
+                )}
               </div>
 
               <div className="mb-3">
