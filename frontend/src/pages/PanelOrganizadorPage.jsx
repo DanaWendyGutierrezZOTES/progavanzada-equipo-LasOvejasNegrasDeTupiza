@@ -5,8 +5,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerEventos, obtenerCompras, eliminarEvento, obtenerUsuarios, registrarUsuario } from '../services/storage';
+import { obtenerEventos, obtenerCompras, eliminarEvento, registrarUsuario } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
+import { formatBs } from '../utils/formatters';
 
 export default function PanelOrganizadorPage() {
   const { usuario, esAdmin } = useAuth();
@@ -36,16 +37,14 @@ export default function PanelOrganizadorPage() {
       ? todosLosEventos.filter(e => Number(e.organizador_id) === Number(usuario.id) || usuario.rol === 'admin')
       : todosLosEventos;
 
-    let totalVendidos = 0;
-    let totalIngresos = 0;
-
-    eventosOrganizador.forEach(ev => {
-      const comprasDelEvento = todasLasCompras.filter(c => Number(c.evento_id) === Number(ev.id));
-      comprasDelEvento.forEach(c => {
-        totalVendidos += Number(c.cantidad) || 0;
-        totalIngresos += Number(c.total) || 0;
-      });
-    });
+    const idsEventos = new Set(eventosOrganizador.map(e => Number(e.id)));
+    const { totalVendidos, totalIngresos } = todasLasCompras.reduce((acc, c) => {
+      if (idsEventos.has(Number(c.evento_id))) {
+        acc.totalVendidos += Number(c.cantidad) || 0;
+        acc.totalIngresos += Number(c.total) || 0;
+      }
+      return acc;
+    }, { totalVendidos: 0, totalIngresos: 0 });
 
     setEventos(eventosOrganizador);
     setMetricas({
@@ -241,7 +240,7 @@ export default function PanelOrganizadorPage() {
               <div>
                 <span className="text-dim small fw-semibold text-uppercase" style={{ fontSize: '0.75rem' }}>RECAUDACIÓN TOTAL</span>
                 <h2 className="fw-extrabold mb-1 mt-2" style={{ color: '#38bdf8' }}>
-                  Bs. {metricas.totalRecaudacion.toLocaleString('es-ES')}
+                  {formatBs(metricas.totalRecaudacion)}
                 </h2>
                 <span className="small text-muted">Total acumulado en Bolivianos</span>
               </div>

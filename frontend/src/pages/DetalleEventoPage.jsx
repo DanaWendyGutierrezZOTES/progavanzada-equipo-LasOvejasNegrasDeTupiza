@@ -8,6 +8,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { obtenerEventoPorId, eliminarEvento } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import MapaRecinto from '../components/MapaRecinto';
+import { formatBs } from '../utils/formatters';
 
 export default function DetalleEventoPage() {
   const { id } = useParams();
@@ -197,7 +198,7 @@ export default function DetalleEventoPage() {
                           </small>
                         </div>
                         <span className="fs-5 fw-bold" style={{ color: '#38bdf8' }}>
-                          Bs. {Number(ticket.precio).toLocaleString('es-ES')}
+                          {formatBs(ticket.precio)}
                         </span>
                       </div>
 
@@ -210,7 +211,7 @@ export default function DetalleEventoPage() {
                           to={`/comprar/${evento.id}/${ticket.id}`}
                           className="btn-modern-primary btn-sm w-100 text-decoration-none mt-2"
                         >
-                          <i className="bi bi-cart3"></i> Comprar por Bs. {Number(ticket.precio).toLocaleString('es-ES')}
+                          <i className="bi bi-cart3"></i> Comprar por {formatBs(ticket.precio)}
                         </Link>
                       )}
                     </div>

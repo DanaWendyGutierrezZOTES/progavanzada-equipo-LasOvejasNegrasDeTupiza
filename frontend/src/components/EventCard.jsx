@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { formatBs, formatCalendarBadge } from '../utils/formatters';
 
 export default function EventCard({ evento }) {
   const cuposTotales = evento.cupo_total || 5000;
@@ -17,21 +18,8 @@ export default function EventCard({ evento }) {
     : [evento.precio_base || 0];
   const precioMinimo = Math.min(...precios);
 
-  // Porcentaje de disponibilidad
   const porcentajeVendido = Math.min(100, Math.max(0, Math.round(((cuposTotales - cuposDisponibles) / cuposTotales) * 100)));
-
-  const formatearFecha = (fechaStr) => {
-    try {
-      const fecha = new Date(fechaStr + 'T00:00:00');
-      const dia = fecha.getDate();
-      const mes = fecha.toLocaleDateString('es-ES', { month: 'short' }).toUpperCase().replace('.', '');
-      return { dia, mes };
-    } catch {
-      return { dia: '15', mes: 'NOV' };
-    }
-  };
-
-  const { dia, mes } = formatearFecha(evento.fecha);
+  const { dia, mes } = formatCalendarBadge(evento.fecha);
   const estaAgotado = cuposDisponibles <= 0;
   const quedanPocos = cuposDisponibles > 0 && cuposDisponibles < 100;
 
@@ -147,7 +135,7 @@ export default function EventCard({ evento }) {
             <div>
               <span className="text-dim small d-block" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>DESDE</span>
               <span className="fs-5 fw-extrabold" style={{ color: '#38bdf8' }}>
-                Bs. {Number(precioMinimo).toLocaleString('es-ES')}
+                {formatBs(precioMinimo)}
               </span>
             </div>
 

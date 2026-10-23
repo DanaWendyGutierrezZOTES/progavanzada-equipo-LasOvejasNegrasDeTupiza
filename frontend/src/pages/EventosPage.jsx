@@ -12,61 +12,11 @@ import { Link } from 'react-router-dom';
 import { obtenerEventos } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import EventCard from '../components/EventCard';
+import { ESTADIOS_BOLIVIA } from '../data/estadios';
 
 const CATEGORIAS = ['Todos', 'Rock', 'Electrónica', 'Festivales', 'Jazz'];
 const CIUDADES = ['Todas', 'La Paz', 'Santa Cruz', 'Cochabamba'];
-
-// Estadios principales de Bolivia para el explorador
-const ESTADIOS_BOLIVIA = [
-  {
-    id: 1,
-    nombre: 'Estadio Hernando Siles',
-    ciudad: 'La Paz',
-    capacidad: '41.143 espectadores',
-    direccion: 'Av. Saavedra, Miraflores',
-    lat: -16.4994,
-    lng: -68.1225,
-    eventoId: 1,
-    concierto: 'Rock Stadium Fest 2026',
-    fecha: '15 Nov 2026'
-  },
-  {
-    id: 2,
-    nombre: 'Estadio Ramón Tahuichi Aguilera',
-    ciudad: 'Santa Cruz',
-    capacidad: '38.500 espectadores',
-    direccion: '2do Anillo, Av. Ejército',
-    lat: -17.7972,
-    lng: -63.1895,
-    eventoId: 2,
-    concierto: 'Santa Cruz Electronic Festival',
-    fecha: '28 Nov 2026'
-  },
-  {
-    id: 3,
-    nombre: 'Estadio Félix Capriles',
-    ciudad: 'Cochabamba',
-    capacidad: '32.000 espectadores',
-    direccion: 'Zona Cala Cala, Av. Libertador Bolívar',
-    lat: -17.3792,
-    lng: -66.1614,
-    eventoId: 3,
-    concierto: 'Cochabamba Fest: Ritmos & Folclore',
-    fecha: '05 Dic 2026'
-  },
-  {
-    id: 4,
-    nombre: 'Teatro Municipal Alberto Saavedra Pérez',
-    ciudad: 'La Paz',
-    capacidad: '650 espectadores',
-    direccion: 'Calle Genaro Sanjinés, Casco Viejo',
-    lat: -16.4952,
-    lng: -68.1362,
-    eventoId: 4,
-    concierto: 'Noche de Jazz & Blues Acústico',
-    fecha: '12 Dic 2026'
-  }
-];
+const ESTADIOS_CONCIERTOS = ESTADIOS_BOLIVIA.filter(e => e.eventoId);
 
 export default function EventosPage() {
   const { usuario, esOrganizador } = useAuth();
@@ -77,22 +27,22 @@ export default function EventosPage() {
   const [filtroFecha, setFiltroFecha] = useState('');
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [ciudadActiva, setCiudadActiva] = useState('Todas');
-  const [vistaModo, setVistaModo] = useState('grid'); // 'grid' (tarjetas) o 'mapa' (explorador estadios Google Maps)
-  const [estadioSeleccionado, setEstadioSeleccionado] = useState(ESTADIOS_BOLIVIA[0]);
+  const [vistaModo, setVistaModo] = useState('grid');
+  const [estadioSeleccionado, setEstadioSeleccionado] = useState(ESTADIOS_CONCIERTOS[0] || ESTADIOS_BOLIVIA[0]);
 
   // Carga inicial
   useEffect(() => {
-    const datos = obtenerEventos();
-    setEventos(datos);
+    setEventos(obtenerEventos());
   }, []);
 
   // Filtro inteligente en tiempo real
   const eventosFiltrados = eventos.filter((ev) => {
+    const busq = busqueda.toLowerCase();
     const coincideTexto =
-      ev.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      ev.descripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
-      ev.lugar.toLowerCase().includes(busqueda.toLowerCase()) ||
-      (ev.estadio_nombre && ev.estadio_nombre.toLowerCase().includes(busqueda.toLowerCase()));
+      ev.nombre.toLowerCase().includes(busq) ||
+      ev.descripcion.toLowerCase().includes(busq) ||
+      ev.lugar.toLowerCase().includes(busq) ||
+      (ev.estadio_nombre && ev.estadio_nombre.toLowerCase().includes(busq));
 
     const coincideFecha = filtroFecha ? ev.fecha >= filtroFecha : true;
 
@@ -124,7 +74,6 @@ export default function EventosPage() {
       <div className="hero-glow-card p-4 p-md-5 mb-5 position-relative overflow-hidden">
         <div className="row align-items-center position-relative" style={{ zIndex: 2 }}>
           <div className="col-lg-8">
-            {/* Pill de Temporada */}
             <div className="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3"
                  style={{ background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.35)' }}>
               <span className="spinner-grow spinner-grow-sm text-info" style={{ width: '8px', height: '8px' }}></span>
@@ -146,7 +95,7 @@ export default function EventosPage() {
             {/* Métricas destacadas del sistema */}
             <div className="d-flex flex-wrap gap-3 mb-4">
               <div className="px-3 py-2 rounded-3 border" style={{ background: 'rgba(255, 255, 255, 0.04)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
-                <div className="fs-5 fw-extrabold text-info">4 Estadios</div>
+                <div className="fs-5 fw-extrabold text-info">{ESTADIOS_CONCIERTOS.length} Estadios</div>
                 <div className="text-dim small" style={{ fontSize: '0.75rem' }}>Geolocalizados con Google Maps</div>
               </div>
               <div className="px-3 py-2 rounded-3 border" style={{ background: 'rgba(255, 255, 255, 0.04)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
@@ -229,7 +178,7 @@ export default function EventosPage() {
                   Selecciona un Estadio para ubicarlo:
                 </span>
 
-                {ESTADIOS_BOLIVIA.map((est) => {
+                {ESTADIOS_CONCIERTOS.map((est) => {
                   const estaSeleccionado = estadioSeleccionado.id === est.id;
                   return (
                     <div
@@ -279,12 +228,14 @@ export default function EventosPage() {
                   </div>
 
                   <div className="d-flex gap-2">
-                    <Link
-                      to={`/evento/${estadioSeleccionado.eventoId}`}
-                      className="btn btn-sm btn-modern-primary"
-                    >
-                      Ver Concierto & Zonas <i className="bi bi-arrow-right"></i>
-                    </Link>
+                    {estadioSeleccionado.eventoId && (
+                      <Link
+                        to={`/evento/${estadioSeleccionado.eventoId}`}
+                        className="btn btn-sm btn-modern-primary"
+                      >
+                        Ver Concierto & Zonas <i className="bi bi-arrow-right"></i>
+                      </Link>
+                    )}
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${estadioSeleccionado.nombre}, ${estadioSeleccionado.ciudad}, Bolivia`)}`}
                       target="_blank"
@@ -312,7 +263,7 @@ export default function EventosPage() {
                   ></iframe>
 
                   <div className="position-absolute bottom-0 start-0 m-3 px-3 py-2 rounded-pill small fw-semibold text-white d-flex align-items-center gap-2"
-                       style={{ background: 'rgba(9, 13, 22, 0.85)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+                       style={{ background: 'rgba(99, 102, 241, 0.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
                     <i className="bi bi-satellite text-info"></i>
                     <span>Vista Satelital Oficial de Google Maps</span>
                     <span className="text-dim">|</span>
@@ -329,7 +280,6 @@ export default function EventosPage() {
           BARRA DE FILTROS & BÚSQUEDA
          ======================================================== */}
       <div id="catalogo" className="glass-panel p-4 mb-4">
-        {/* Filtros superiores: Chips de Ciudades y Categorías */}
         <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 border-bottom pb-3" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
           {/* Selector de Ciudad */}
           <div className="d-flex align-items-center gap-2 flex-wrap">
@@ -428,7 +378,6 @@ export default function EventosPage() {
         )}
       </div>
 
-      {/* Grilla de Tarjetas */}
       {eventosFiltrados.length > 0 ? (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4 mb-5">
           {eventosFiltrados.map((evento) => (

@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { obtenerEventoPorId, agregarTipoTicket, eliminarTipoTicket } from '../services/storage';
+import { formatBs } from '../utils/formatters';
 
 export default function GestionarTicketsPage() {
   const { id } = useParams();
@@ -53,7 +54,7 @@ export default function GestionarTicketsPage() {
         cantidad_disponible: Number(cupoTicket)
       });
 
-      setMensaje({ tipo: 'success', texto: `Entrada "${nombreTicket}" configurada con éxito en Bs. ${precioTicket}.` });
+      setMensaje({ tipo: 'success', texto: `Entrada "${nombreTicket}" configurada con éxito en ${formatBs(precioTicket)}.` });
       setNombreTicket('');
       setPrecioTicket('');
       setCupoTicket('');
@@ -170,7 +171,7 @@ export default function GestionarTicketsPage() {
                     <div>
                       <h6 className="fw-bold text-white mb-1">{ticket.nombre}</h6>
                       <div className="small text-muted">
-                        Precio: <strong style={{ color: '#38bdf8' }}>Bs. {Number(ticket.precio).toLocaleString('es-ES')}</strong> &bull;{' '}
+                        Precio: <strong style={{ color: '#38bdf8' }}>{formatBs(ticket.precio)}</strong> &bull;{' '}
                         Cupo: <strong className="text-light">{ticket.cantidad_disponible}</strong> / {ticket.cantidad_total} disponibles
                       </div>
                     </div>

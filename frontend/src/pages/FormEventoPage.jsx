@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { obtenerEventoPorId, guardarEvento } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
+import { ESTADIOS_BOLIVIA } from '../data/estadios';
 
 export default function FormEventoPage() {
   const { id } = useParams();
@@ -40,6 +41,10 @@ export default function FormEventoPage() {
           fecha: eventoExistente.fecha,
           hora: eventoExistente.hora,
           lugar: eventoExistente.lugar,
+          estadio_nombre: eventoExistente.estadio_nombre || eventoExistente.lugar,
+          ciudad: eventoExistente.ciudad || 'La Paz',
+          lat: eventoExistente.lat || -16.4994,
+          lng: eventoExistente.lng || -68.1225,
           imagen_url: eventoExistente.imagen_url || '',
           precio_base: eventoExistente.precio_base || 0,
           cupo_total: eventoExistente.cupo_total || 0,
@@ -54,6 +59,20 @@ export default function FormEventoPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectEstadio = (e) => {
+    const estadio = ESTADIOS_BOLIVIA.find(est => est.key === e.target.value);
+    if (estadio) {
+      setFormData(prev => ({
+        ...prev,
+        lugar: estadio.lugar,
+        estadio_nombre: estadio.nombre,
+        ciudad: estadio.ciudad,
+        lat: estadio.lat,
+        lng: estadio.lng
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -192,29 +211,13 @@ export default function FormEventoPage() {
                   <span><i className="bi bi-geo-alt-fill text-danger me-1"></i> Seleccionar Estadio / Recinto (Bolivia)</span>
                   <span className="text-info small">Geolocalización Automática Google Maps</span>
                 </label>
-                <select
-                  className="form-select form-control-modern mb-2"
-                  onChange={(e) => {
-                    const sel = e.target.value;
-                    if (sel === 'siles') {
-                      setFormData(prev => ({ ...prev, lugar: 'Estadio Hernando Siles, La Paz', estadio_nombre: 'Estadio Olímpico Hernando Siles', ciudad: 'La Paz', lat: -16.4994, lng: -68.1225 }));
-                    } else if (sel === 'tahuichi') {
-                      setFormData(prev => ({ ...prev, lugar: 'Estadio Ramón Tahuichi Aguilera, Santa Cruz', estadio_nombre: 'Estadio Ramón Tahuichi Aguilera', ciudad: 'Santa Cruz', lat: -17.7972, lng: -63.1895 }));
-                    } else if (sel === 'capriles') {
-                      setFormData(prev => ({ ...prev, lugar: 'Estadio Félix Capriles, Cochabamba', estadio_nombre: 'Estadio Sudamericano Félix Capriles', ciudad: 'Cochabamba', lat: -17.3792, lng: -66.1614 }));
-                    } else if (sel === 'chuquiago') {
-                      setFormData(prev => ({ ...prev, lugar: 'Campo Ferial Chuquiago Marka, La Paz', estadio_nombre: 'Campo Ferial Chuquiago Marka', ciudad: 'La Paz', lat: -16.5397, lng: -68.0892 }));
-                    } else if (sel === 'teatro') {
-                      setFormData(prev => ({ ...prev, lugar: 'Teatro Municipal Alberto Saavedra Pérez, La Paz', estadio_nombre: 'Teatro Municipal Alberto Saavedra Pérez', ciudad: 'La Paz', lat: -16.4952, lng: -68.1362 }));
-                    }
-                  }}
-                >
+                <select className="form-select form-control-modern mb-2" onChange={handleSelectEstadio}>
                   <option value="">-- Elige un estadio preconfigurado o escribe abajo --</option>
-                  <option value="siles">🏟️ Estadio Hernando Siles (La Paz - Cap. 41.143)</option>
-                  <option value="tahuichi">🏟️ Estadio Ramón Tahuichi Aguilera (Santa Cruz - Cap. 38.500)</option>
-                  <option value="capriles">🏟️ Estadio Félix Capriles (Cochabamba - Cap. 32.000)</option>
-                  <option value="chuquiago">🎪 Campo Ferial Chuquiago Marka (La Paz - Cap. 10.000)</option>
-                  <option value="teatro">🎭 Teatro Municipal Alberto Saavedra Pérez (La Paz - Cap. 650)</option>
+                  {ESTADIOS_BOLIVIA.map(est => (
+                    <option key={est.key} value={est.key}>
+                      🏟️ {est.nombre} ({est.ciudad} - Cap. {est.capacidad})
+                    </option>
+                  ))}
                 </select>
 
                 <input

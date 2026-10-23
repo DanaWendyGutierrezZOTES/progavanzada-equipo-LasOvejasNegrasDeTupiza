@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { obtenerEventoPorId, realizarCompra } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
+import { formatBs } from '../utils/formatters';
 
 export default function ComprarTicketPage() {
   const { eventoId, tipoId } = useParams();
@@ -129,7 +130,7 @@ export default function ComprarTicketPage() {
                   <div className="text-lg-end">
                     <span className="text-dim small d-block">PRECIO UNITARIO</span>
                     <span className="fs-4 fw-bold" style={{ color: '#38bdf8' }}>
-                      Bs. {precioUnitario.toLocaleString('es-ES')}
+                      {formatBs(precioUnitario)}
                     </span>
                   </div>
                 </div>
@@ -211,8 +212,8 @@ export default function ComprarTicketPage() {
               {/* Desglose y Total en Bolivianos */}
               <div className="p-4 rounded-4 border mt-4" style={{ background: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
                 <div className="d-flex justify-content-between mb-2 small text-muted">
-                  <span>Subtotal ({cantidad} x Bs. {precioUnitario.toLocaleString('es-ES')}):</span>
-                  <span className="text-light">Bs. {totalPagar.toLocaleString('es-ES')}</span>
+                  <span>Subtotal ({cantidad} x {formatBs(precioUnitario)}):</span>
+                  <span className="text-light">{formatBs(totalPagar)}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-3 small text-muted">
                   <span>Comisión por servicio:</span>
@@ -225,7 +226,7 @@ export default function ComprarTicketPage() {
                   </div>
                   <div className="text-end">
                     <span className="display-6 fw-extrabold" style={{ color: '#38bdf8' }}>
-                      Bs. {totalPagar.toLocaleString('es-ES')}
+                      {formatBs(totalPagar)}
                     </span>
                   </div>
                 </div>
@@ -238,7 +239,7 @@ export default function ComprarTicketPage() {
                   {procesando ? (
                     <span>Generando Pase Digital...</span>
                   ) : (
-                    <span><i className="bi bi-shield-check"></i> Pagar Bs. {totalPagar.toLocaleString('es-ES')} y Obtener Pase</span>
+                    <span><i className="bi bi-shield-check"></i> Pagar {formatBs(totalPagar)} y Obtener Pase</span>
                   )}
                 </button>
               </div>

@@ -7,6 +7,8 @@
 // ========================================================
 
 import React, { useState } from 'react';
+import { SECTORES_ESTADIO_DEFECTO } from '../data/estadios';
+import { formatBs } from '../utils/formatters';
 
 export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionadaId }) {
   const [pestañaActiva, setPestañaActiva] = useState('estadio'); // 'estadio', 'googlemaps', 'accesos'
@@ -21,14 +23,23 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
   const googleMapsDirectUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${nombreLugar}, ${evento.ciudad || 'Bolivia'}`)}`;
   const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
-  const sectores = evento.sectores_geograficos || [
-    { id: 'vip', nombre: 'VIP Front Stage', ubicacion_estadio: 'Frente al Escenario', puerta: 'Puerta 1 - Alfombra Roja', color: '#f59e0b', precio: 450, capacidad: 800 },
-    { id: 'cancha', nombre: 'Cancha General / Campo', ubicacion_estadio: 'Césped Central', puerta: 'Puertas 2 y 3 - Rampa Sur', color: '#6366f1', precio: 220, capacidad: 4000 },
-    { id: 'preferencial', nombre: 'Tribuna Preferencial (Occidente)', ubicacion_estadio: 'Sector Occidental', puerta: 'Puerta 4 - Palcos y Butacas', color: '#38bdf8', precio: 280, capacidad: 1500 },
-    { id: 'general', nombre: 'Tribuna General (Oriente)', ubicacion_estadio: 'Sector Oriental', puerta: 'Puerta 7 - Calle Sanjinés', color: '#10b981', precio: 180, capacidad: 2000 },
-    { id: 'curva_norte', nombre: 'Curva Norte', ubicacion_estadio: 'Cabecera Norte', puerta: 'Puerta 9 - Av. del Ejército', color: '#ec4899', precio: 140, capacidad: 1200 },
-    { id: 'curva_sur', nombre: 'Curva Sur', ubicacion_estadio: 'Cabecera Sur', puerta: 'Puerta 12 - Calle Carrasco', color: '#8b5cf6', precio: 140, capacidad: 1200 }
-  ];
+  const sectores = evento.sectores_geograficos || SECTORES_ESTADIO_DEFECTO;
+
+  const getPrecioSector = (id, fallback) => {
+    const sec = sectores.find(s => s.id === id);
+    return formatBs(sec?.precio || fallback);
+  };
+
+  const seleccionarZonaPorKeywords = (keywords, exclude = []) => {
+    if (!onSeleccionarZona || !evento.tipos_ticket) return;
+    const ticket = evento.tipos_ticket.find(t => {
+      const nombre = t.nombre.toLowerCase();
+      const coincide = keywords.some(k => nombre.includes(k));
+      const excluido = exclude.some(k => nombre.includes(k));
+      return coincide && !excluido;
+    });
+    if (ticket) onSeleccionarZona(ticket.id);
+  };
 
   return (
     <div className="glass-panel p-4 mb-4 position-relative overflow-hidden">
@@ -95,10 +106,7 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
             {/* Cabecera / Curva Norte */}
             <div className="mb-3 max-w-md mx-auto" style={{ maxWidth: '420px' }}>
               <div
-                onClick={() => {
-                  const ticket = evento.tipos_ticket?.find(t => t.nombre.toLowerCase().includes('curva') || t.nombre.toLowerCase().includes('general'));
-                  onSeleccionarZona && ticket && onSeleccionarZona(ticket.id);
-                }}
+                onClick={() => seleccionarZonaPorKeywords(['curva', 'general'])}
                 className="stadium-stand-curva-norte p-2 rounded-top-pill cursor-pointer transition-all"
                 style={{
                   background: 'rgba(236, 72, 153, 0.15)',
@@ -109,7 +117,7 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
               >
                 <div className="fw-bold small text-white">⬆ CURVA NORTE (TRIBUNA NORTE)</div>
                 <div className="text-pink small" style={{ color: '#f472b6', fontSize: '0.75rem' }}>
-                  Puerta 9 &bull; Acceso Av. del Ejército &bull; Bs. {sectores.find(s => s.id === 'curva_norte')?.precio || 140}
+                  Puerta 9 &bull; Acceso Av. del Ejército &bull; {getPrecioSector('curva_norte', 140)}
                 </div>
               </div>
             </div>
@@ -119,10 +127,7 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
               
               {/* Tribuna Preferencial (Occidente) */}
               <div
-                onClick={() => {
-                  const ticket = evento.tipos_ticket?.find(t => t.nombre.toLowerCase().includes('preferen') || t.nombre.toLowerCase().includes('platea'));
-                  onSeleccionarZona && ticket && onSeleccionarZona(ticket.id);
-                }}
+                onClick={() => seleccionarZonaPorKeywords(['preferen', 'platea'])}
                 className="p-3 rounded-4 cursor-pointer text-start transition-all d-flex flex-column justify-content-center"
                 style={{
                   width: '130px',
@@ -135,7 +140,7 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
                 <span className="badge bg-info text-dark fw-bold mb-1" style={{ fontSize: '0.65rem' }}>OESTE</span>
                 <div className="fw-bold text-white small">TRIBUNA PREFERENCIAL</div>
                 <div className="text-info small" style={{ fontSize: '0.75rem' }}>Palcos / Butacas</div>
-                <div className="mt-2 fw-extrabold text-info">Bs. {sectores.find(s => s.id === 'preferencial')?.precio || 280}</div>
+                <div className="mt-2 fw-extrabold text-info">{getPrecioSector('preferencial', 280)}</div>
                 <div className="text-dim mt-1" style={{ fontSize: '0.7rem' }}>Puerta 4 Saavedra</div>
               </div>
 
@@ -147,7 +152,6 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
                      background: 'rgba(16, 185, 129, 0.08)',
                      border: '2px dashed rgba(16, 185, 129, 0.35)'
                    }}>
-                
                 {/* Escenario Monumental */}
                 <div className="py-2 px-3 rounded-pill mx-auto mb-3 shadow-lg fw-extrabold text-dark"
                      style={{
@@ -161,10 +165,7 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
 
                 {/* Zona VIP Front Stage */}
                 <div
-                  onClick={() => {
-                    const ticket = evento.tipos_ticket?.find(t => t.nombre.toLowerCase().includes('vip'));
-                    onSeleccionarZona && ticket && onSeleccionarZona(ticket.id);
-                  }}
+                  onClick={() => seleccionarZonaPorKeywords(['vip'])}
                   className="p-3 rounded-3 mb-2 cursor-pointer transition-all"
                   style={{
                     background: 'rgba(245, 158, 11, 0.25)',
@@ -177,16 +178,13 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
                       <span className="badge bg-warning text-dark fw-bold mb-1" style={{ fontSize: '0.7rem' }}>⭐ VIP FRONT STAGE</span>
                       <div className="text-white small fw-semibold">Frente al Artista &bull; Alfombra Roja</div>
                     </div>
-                    <span className="fw-bold text-warning fs-6">Bs. {sectores.find(s => s.id === 'vip')?.precio || 450}</span>
+                    <span className="fw-bold text-warning fs-6">{getPrecioSector('vip', 450)}</span>
                   </div>
                 </div>
 
                 {/* Zona Cancha General / Césped */}
                 <div
-                  onClick={() => {
-                    const ticket = evento.tipos_ticket?.find(t => t.nombre.toLowerCase().includes('cancha'));
-                    onSeleccionarZona && ticket && onSeleccionarZona(ticket.id);
-                  }}
+                  onClick={() => seleccionarZonaPorKeywords(['cancha'])}
                   className="p-3 rounded-3 cursor-pointer transition-all"
                   style={{
                     background: 'rgba(99, 102, 241, 0.2)',
@@ -199,17 +197,14 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
                       <span className="badge bg-primary text-white fw-bold mb-1" style={{ fontSize: '0.7rem' }}>CANCHA GENERAL</span>
                       <div className="text-white small fw-semibold">Césped Central &bull; De pie</div>
                     </div>
-                    <span className="fw-bold fs-6" style={{ color: '#818cf8' }}>Bs. {sectores.find(s => s.id === 'cancha')?.precio || 220}</span>
+                    <span className="fw-bold fs-6" style={{ color: '#818cf8' }}>{getPrecioSector('cancha', 220)}</span>
                   </div>
                 </div>
               </div>
 
               {/* Tribuna General (Oriente) */}
               <div
-                onClick={() => {
-                  const ticket = evento.tipos_ticket?.find(t => t.nombre.toLowerCase().includes('general') && !t.nombre.toLowerCase().includes('cancha'));
-                  onSeleccionarZona && ticket && onSeleccionarZona(ticket.id);
-                }}
+                onClick={() => seleccionarZonaPorKeywords(['general'], ['cancha'])}
                 className="p-3 rounded-4 cursor-pointer text-end transition-all d-flex flex-column justify-content-center"
                 style={{
                   width: '130px',
@@ -222,7 +217,7 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
                 <span className="badge bg-success text-white fw-bold mb-1 ms-auto" style={{ fontSize: '0.65rem' }}>ESTE</span>
                 <div className="fw-bold text-white small">TRIBUNA GENERAL</div>
                 <div className="text-success small" style={{ fontSize: '0.75rem' }}>Gradería Este</div>
-                <div className="mt-2 fw-extrabold text-success">Bs. {sectores.find(s => s.id === 'general')?.precio || 180}</div>
+                <div className="mt-2 fw-extrabold text-success">{getPrecioSector('general', 180)}</div>
                 <div className="text-dim mt-1" style={{ fontSize: '0.7rem' }}>Puerta 7 Sanjinés</div>
               </div>
             </div>
@@ -230,10 +225,7 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
             {/* Cabecera / Curva Sur */}
             <div className="mt-3 max-w-md mx-auto" style={{ maxWidth: '420px' }}>
               <div
-                onClick={() => {
-                  const ticket = evento.tipos_ticket?.find(t => t.nombre.toLowerCase().includes('curva') || t.nombre.toLowerCase().includes('general'));
-                  onSeleccionarZona && ticket && onSeleccionarZona(ticket.id);
-                }}
+                onClick={() => seleccionarZonaPorKeywords(['curva', 'general'])}
                 className="p-2 rounded-bottom-pill cursor-pointer transition-all"
                 style={{
                   background: 'rgba(139, 92, 246, 0.15)',
@@ -244,7 +236,7 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
               >
                 <div className="fw-bold small text-white">⬇ CURVA SUR (TRIBUNA SUR)</div>
                 <div className="text-purple small" style={{ color: '#c084fc', fontSize: '0.75rem' }}>
-                  Puerta 12 &bull; Acceso Calle Carrasco &bull; Bs. {sectores.find(s => s.id === 'curva_sur')?.precio || 140}
+                  Puerta 12 &bull; Acceso Calle Carrasco &bull; {getPrecioSector('curva_sur', 140)}
                 </div>
               </div>
             </div>
@@ -261,7 +253,7 @@ export default function MapaRecinto({ evento, onSeleccionarZona, zonaSeleccionad
                   </div>
                   <div className="text-muted d-flex justify-content-between align-items-center mt-1" style={{ fontSize: '0.75rem' }}>
                     <span>{sec.puerta}</span>
-                    <span className="fw-bold text-info">Bs. {sec.precio}</span>
+                    <span className="fw-bold text-info">{formatBs(sec.precio)}</span>
                   </div>
                 </div>
               </div>

@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { obtenerCompraPorId } from '../services/storage';
+import { formatBs, formatDate } from '../utils/formatters';
 
 export default function TicketDetallePage() {
   const { id } = useParams();
@@ -56,7 +57,7 @@ export default function TicketDetallePage() {
               ✦ Pase Digital Oficial
             </span>
             <span className="small text-white-50">
-              {new Date(compra.fecha_compra).toLocaleDateString('es-ES')}
+              {formatDate(compra.fecha_compra)}
             </span>
           </div>
           <h3 className="fw-extrabold mb-1 text-white">{compra.evento_nombre}</h3>
@@ -95,55 +96,59 @@ export default function TicketDetallePage() {
                 </div>
                 <div className="col-6">
                   <span className="text-dim small text-uppercase d-block" style={{ fontSize: '0.7rem' }}>TOTAL PAGADO</span>
-                  <span className="fw-bold text-emerald">Bs. {Number(compra.total).toLocaleString('es-ES')}</span>
+                  <span className="fw-bold text-emerald">{formatBs(compra.total)}</span>
                 </div>
               </div>
 
-              <div>
-                <span className="text-dim small text-uppercase d-block" style={{ fontSize: '0.7rem' }}>TITULAR REGISTRADO</span>
-                <span className="fw-semibold text-white">{compra.usuario_nombre}</span>
+              <div className="p-3 rounded-3" style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <span className="text-dim small text-uppercase d-block mb-1" style={{ fontSize: '0.7rem' }}>TITULAR DEL PASE</span>
+                <div className="fw-bold text-white">{compra.comprador_nombre}</div>
+                <div className="small text-muted">{compra.comprador_email}</div>
               </div>
             </div>
 
-            {/* Código QR y Código Único */}
-            <div className="col-md-5 text-center border-start ps-md-4" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
-              <div className="p-3 rounded-4 d-inline-block border mb-3"
-                   style={{ background: '#ffffff', borderColor: 'rgba(255, 255, 255, 0.2)' }}>
-                {/* Código QR dibujado en SVG limpio */}
-                <svg width="115" height="115" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="100" height="100" fill="#ffffff" />
-                  <rect x="10" y="10" width="30" height="30" stroke="#0f172a" strokeWidth="6" fill="none" />
-                  <rect x="20" y="20" width="10" height="10" fill="#0f172a" />
-                  <rect x="60" y="10" width="30" height="30" stroke="#0f172a" strokeWidth="6" fill="none" />
-                  <rect x="70" y="20" width="10" height="10" fill="#0f172a" />
-                  <rect x="10" y="60" width="30" height="30" stroke="#0f172a" strokeWidth="6" fill="none" />
-                  <rect x="20" y="70" width="10" height="10" fill="#0f172a" />
-                  <rect x="50" y="50" width="12" height="12" fill="#0f172a" />
-                  <rect x="70" y="60" width="16" height="8" fill="#0f172a" />
-                  <rect x="55" y="75" width="25" height="12" fill="#0f172a" />
-                </svg>
+            {/* Código QR y Verificación */}
+            <div className="col-md-5 text-center">
+              <div className="p-3 rounded-4 d-inline-block bg-white shadow-lg">
+                <img
+                  src={compra.qr_url}
+                  alt={`Código QR ${compra.codigo_ticket}`}
+                  style={{ width: '150px', height: '150px', display: 'block' }}
+                />
               </div>
+              <div className="mt-3">
+                <span className="font-monospace fw-bold text-white fs-6 tracking-wide d-block">
+                  {compra.codigo_ticket}
+                </span>
+                <span className="text-dim small" style={{ fontSize: '0.75rem' }}>
+                  Código Único Criptográfico Verificado
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-              <div className="px-3 py-1 rounded-pill small font-monospace fw-bold d-inline-block mb-1"
-                   style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)', letterSpacing: '1px' }}>
-                {compra.codigo_ticket}
-              </div>
-              <small className="text-dim d-block" style={{ fontSize: '0.75rem' }}>Escanea este código en el acceso</small>
+        {/* Footer del Pase con Indicaciones de Seguridad */}
+        <div className="ticket-pass-footer">
+          <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 text-muted small">
+            <div>
+              <i className="bi bi-shield-check text-emerald me-1"></i>
+              Boleto intransferible. Válido únicamente con documento de identidad.
+            </div>
+            <div className="text-dim" style={{ fontSize: '0.75rem' }}>
+              Sistema Oficial Boletería Digital 2026
             </div>
           </div>
         </div>
       </div>
 
-      {/* Botones de Acción (Ocultos al Imprimir) */}
-      <div className="d-flex flex-wrap justify-content-center gap-3 d-print-none">
+      {/* Botones de Acción (Ocultos al imprimir) */}
+      <div className="d-flex justify-content-center gap-3 d-print-none mt-4">
         <button onClick={handleImprimir} className="btn-modern-primary">
-          <i className="bi bi-printer me-1"></i> Imprimir / Guardar PDF (1 Hoja)
+          <i className="bi bi-printer me-2"></i> Imprimir / Guardar en PDF
         </button>
-        <Link to="/mis-tickets" className="btn-modern-outline text-decoration-none">
-          <i className="bi bi-ticket-detailed me-1"></i> Ver Mis Entradas
-        </Link>
-        <Link to="/" className="btn-modern-outline text-decoration-none">
-          Explorar Más
+        <Link to="/mis-tickets" className="btn-modern-outline">
+          <i className="bi bi-collection me-2"></i> Ver Todos Mis Pases
         </Link>
       </div>
     </div>

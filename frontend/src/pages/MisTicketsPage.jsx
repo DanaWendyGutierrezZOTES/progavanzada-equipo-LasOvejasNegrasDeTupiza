@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { obtenerCompras } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
+import { formatBs, formatDate } from '../utils/formatters';
 
 export default function MisTicketsPage() {
   const { usuario } = useAuth();
@@ -48,7 +49,7 @@ export default function MisTicketsPage() {
                       {compra.tipo_ticket_nombre}
                     </span>
                     <span className="text-dim small">
-                      {new Date(compra.fecha_compra).toLocaleDateString('es-ES')}
+                      {formatDate(compra.fecha_compra)}
                     </span>
                   </div>
 
@@ -67,7 +68,7 @@ export default function MisTicketsPage() {
                     </div>
                     <div className="text-end">
                       <small className="text-dim d-block" style={{ fontSize: '0.7rem' }}>TOTAL PAGADO</small>
-                      <strong className="text-emerald">Bs. {Number(compra.total).toLocaleString('es-ES')}</strong>
+                      <strong className="text-emerald">{formatBs(compra.total)}</strong>
                     </div>
                   </div>
                 </div>

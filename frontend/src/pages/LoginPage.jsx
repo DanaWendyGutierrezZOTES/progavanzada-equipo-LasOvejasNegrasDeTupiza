@@ -15,33 +15,26 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Función unificada de inicio de sesión y redirección inteligente
+  const ejecutarLogin = (user, pass) => {
     setError('');
-
     try {
-      const u = login(username, password);
-      if (u.rol === 'organizador' || u.rol === 'admin') {
-        navigate('/organizador/panel');
-      } else {
-        navigate('/');
-      }
+      const u = login(user, pass);
+      navigate(u.rol === 'organizador' || u.rol === 'admin' ? '/organizador/panel' : '/');
     } catch (err) {
       setError(err.message || 'Error al iniciar sesión');
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    ejecutarLogin(username, password);
+  };
+
   const autoCompletar = (user, pass) => {
     setUsername(user);
     setPassword(pass);
-    try {
-      const u = login(user, pass);
-      if (u.rol === 'organizador' || u.rol === 'admin') {
-        navigate('/organizador/panel');
-      } else {
-        navigate('/');
-      }
-    } catch {}
+    ejecutarLogin(user, pass);
   };
 
   return (
@@ -95,7 +88,7 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* Accesos rápidos para defensa y pruebas */}
+            {/* Accesos rápidos para defensa y evaluación */}
             <div className="mt-4 pt-4 border-top" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
               <span className="small text-dim d-block text-center mb-3 fw-semibold">
                 Acceso con 1 Clic para la Evaluación:
