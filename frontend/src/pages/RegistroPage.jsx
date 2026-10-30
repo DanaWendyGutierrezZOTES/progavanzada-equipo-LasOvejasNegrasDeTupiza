@@ -27,7 +27,7 @@ export default function RegistroPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -37,7 +37,7 @@ export default function RegistroPage() {
     }
 
     try {
-      const nuevo = registro({
+      const nuevo = await registro({
         username: formData.username,
         nombre: formData.nombre,
         email: formData.email,

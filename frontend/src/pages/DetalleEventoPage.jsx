@@ -38,9 +38,9 @@ export default function DetalleEventoPage() {
 
   const esDueno = usuario && (usuario.id === evento.organizador_id || usuario.rol === 'admin' || esOrganizador);
 
-  const handleEliminar = () => {
+  const handleEliminar = async () => {
     if (window.confirm(`¿Estás seguro de que deseas eliminar el evento "${evento.nombre}"?`)) {
-      eliminarEvento(evento.id);
+      await eliminarEvento(evento.id);
       alert('Evento eliminado correctamente');
       navigate('/');
     }

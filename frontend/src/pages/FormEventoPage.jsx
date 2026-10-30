@@ -75,7 +75,7 @@ export default function FormEventoPage() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -102,7 +102,7 @@ export default function FormEventoPage() {
 
       if (esEdicion) {
         datosAEnviar.id = Number(id);
-        guardarEvento(datosAEnviar);
+        await guardarEvento(datosAEnviar);
         alert('Evento actualizado exitosamente.');
         navigate(`/evento/${id}`);
       } else {
@@ -119,7 +119,7 @@ export default function FormEventoPage() {
           }
         ];
 
-        const nuevo = guardarEvento(datosAEnviar);
+        const nuevo = await guardarEvento(datosAEnviar);
         alert('Evento publicado con éxito en la cartelera.');
         navigate(`/evento/${nuevo.id}/tickets`);
       }

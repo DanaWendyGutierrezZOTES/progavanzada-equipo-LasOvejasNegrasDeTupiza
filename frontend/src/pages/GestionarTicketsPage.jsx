@@ -37,7 +37,7 @@ export default function GestionarTicketsPage() {
     );
   }
 
-  const handleAgregarTicket = (e) => {
+  const handleAgregarTicket = async (e) => {
     e.preventDefault();
     setMensaje({ tipo: '', texto: '' });
 
@@ -47,7 +47,7 @@ export default function GestionarTicketsPage() {
     }
 
     try {
-      agregarTipoTicket(evento.id, {
+      await agregarTipoTicket(evento.id, {
         nombre: nombreTicket,
         precio: Number(precioTicket),
         cantidad_total: Number(cupoTicket),
@@ -64,9 +64,9 @@ export default function GestionarTicketsPage() {
     }
   };
 
-  const handleEliminarTicket = (ticketId, nombre) => {
+  const handleEliminarTicket = async (ticketId, nombre) => {
     if (window.confirm(`¿Seguro que deseas eliminar la entrada "${nombre}"?`)) {
-      eliminarTipoTicket(evento.id, ticketId);
+      await eliminarTipoTicket(evento.id, ticketId);
       setMensaje({ tipo: 'info', texto: `Entrada "${nombre}" eliminada.` });
       cargarEvento();
     }

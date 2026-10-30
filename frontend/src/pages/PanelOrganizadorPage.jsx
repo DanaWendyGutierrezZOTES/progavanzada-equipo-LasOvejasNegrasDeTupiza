@@ -58,14 +58,14 @@ export default function PanelOrganizadorPage() {
     cargarDatos();
   }, [usuario]);
 
-  const handleEliminar = (id, nombre) => {
+  const handleEliminar = async (id, nombre) => {
     if (window.confirm(`¿Estás seguro de que deseas eliminar el evento "${nombre}"?`)) {
-      eliminarEvento(id);
+      await eliminarEvento(id);
       cargarDatos();
     }
   };
 
-  const handleCrearOrganizador = (e) => {
+  const handleCrearOrganizador = async (e) => {
     e.preventDefault();
     setMensajeOrg({ tipo: '', texto: '' });
 
@@ -75,7 +75,7 @@ export default function PanelOrganizadorPage() {
     }
 
     try {
-      registrarUsuario({
+      await registrarUsuario({
         ...nuevoOrg,
         rol: 'organizador'
       });

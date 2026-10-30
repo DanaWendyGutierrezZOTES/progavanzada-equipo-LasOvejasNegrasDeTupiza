@@ -48,7 +48,7 @@ export default function ComprarTicketPage() {
   const precioUnitario = Number(tipoTicket.precio);
   const totalPagar = precioUnitario * Number(cantidad);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -72,7 +72,7 @@ export default function ComprarTicketPage() {
         email: emailComprador
       };
 
-      const nuevaCompra = realizarCompra({
+      const nuevaCompra = await realizarCompra({
         usuario: compradorActual,
         eventoId: evento.id,
         tipoTicketId: tipoTicket.id,

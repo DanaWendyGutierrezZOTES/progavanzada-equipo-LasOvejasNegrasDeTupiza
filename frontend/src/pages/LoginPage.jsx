@@ -16,10 +16,10 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   // Función unificada de inicio de sesión y redirección inteligente
-  const ejecutarLogin = (user, pass) => {
+  const ejecutarLogin = async (user, pass) => {
     setError('');
     try {
-      const u = login(user, pass);
+      const u = await login(user, pass);
       navigate(u.rol === 'organizador' || u.rol === 'admin' ? '/organizador/panel' : '/');
     } catch (err) {
       setError(err.message || 'Error al iniciar sesión');
