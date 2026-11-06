@@ -57,6 +57,30 @@ class Evento(models.Model):
     precio_base = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Precio Base (Bs.)")
     organizador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='eventos', verbose_name="Organizador")
     cupo_total = models.PositiveIntegerField(verbose_name="Cupo Total")
+
+    # 🆕 CAMBIO 1: capacidad_maxima - cuántas personas caben físicamente en el recinto
+    # Es distinto al cupo_total (tickets vendibles). Ejemplo: estadio con 40.000 personas
+    # pero solo se venden 20.000 tickets (cupo_total).
+    capacidad_maxima = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Capacidad Máxima del Recinto",
+        help_text="Aforo máximo físico del recinto. Puede ser mayor al cupo de tickets en venta."
+    )
+
+    # 🆕 CAMBIO 2: estado del evento - solo el administrador (is_superuser) puede cancelar
+    ESTADO_CHOICES = (
+        ('activo', 'Activo'),
+        ('cancelado', 'Cancelado'),
+        ('finalizado', 'Finalizado'),
+    )
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADO_CHOICES,
+        default='activo',
+        verbose_name="Estado del Evento",
+        help_text="Solo el administrador puede cambiar el estado a 'cancelado'."
+    )
+
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
@@ -110,7 +134,6 @@ class TipoTicket(models.Model):
     def __str__(self):
         return f"{self.nombre} - Bs. {self.precio} ({self.evento.nombre})"
 
-
     def save(self, *args, **kwargs):
         if not self.pk and self.cantidad_total == 0:
             self.cantidad_total = self.cantidad_disponible
@@ -130,7 +153,6 @@ class Compra(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Total (Bs.)")
     fecha_compra = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Compra")
     codigo_ticket = models.CharField(max_length=64, unique=True, editable=False, verbose_name="Código Único de Ticket")
-
 
     class Meta:
         ordering = ['-fecha_compra']

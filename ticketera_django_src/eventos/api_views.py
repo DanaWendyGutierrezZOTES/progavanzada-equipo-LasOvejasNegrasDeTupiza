@@ -167,6 +167,8 @@ def api_eventos_lista(request):
             imagen_url=data.get('imagen_url', ''),
             precio_base=data.get('precio_base', 0),
             cupo_total=data.get('cupo_total', 100),
+            # 🆕 CAMBIO 1: Se acepta capacidad_maxima al crear el evento
+            capacidad_maxima=data.get('capacidad_maxima', 0),
             organizador=organizador
         )
 
@@ -199,7 +201,9 @@ def api_evento_detalle(request, pk):
 
     elif request.method in ['PUT', 'PATCH']:
         data = request.data
-        for field in ['nombre', 'subtitulo', 'categoria', 'ciudad', 'descripcion', 'fecha', 'hora', 'lugar', 'estadio_nombre', 'capacidad_estadio', 'ubicacion_mapa', 'lat', 'lng', 'sectores_geograficos', 'imagen_url', 'precio_base', 'cupo_total']:
+        for field in ['nombre', 'subtitulo', 'categoria', 'ciudad', 'descripcion', 'fecha', 'hora',
+                      'lugar', 'estadio_nombre', 'capacidad_estadio', 'ubicacion_mapa', 'lat', 'lng',
+                      'sectores_geograficos', 'imagen_url', 'precio_base', 'cupo_total', 'capacidad_maxima']:
             if field in data:
                 setattr(evento, field, data[field])
         evento.save()
@@ -220,6 +224,49 @@ def api_evento_detalle(request, pk):
     elif request.method == 'DELETE':
         evento.delete()
         return Response({'mensaje': 'Evento eliminado exitosamente'}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def api_cancelar_evento(request, pk):
+    """
+    🆕 CAMBIO 2 - Regla de negocio: SOLO el administrador (is_superuser) puede cancelar un evento.
+    El organizador NO tiene este permiso; solo puede crear, editar o eliminar sus propios eventos.
+
+    Ejemplo de uso:
+        POST /api/eventos/5/cancelar/
+        Headers: Cookie con sesión de admin activa
+    """
+    evento = get_object_or_404(Evento, pk=pk)
+
+    # El usuario debe estar autenticado
+    if not request.user.is_authenticated:
+        return Response(
+            {'error': 'Debes iniciar sesion para realizar esta accion.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    # Solo el administrador (superusuario) puede cancelar
+    if not request.user.is_superuser:
+        return Response(
+            {'error': 'Solo el administrador puede cancelar eventos. Los organizadores no tienen este permiso.'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    # No cancelar algo que ya esta cancelado
+    if evento.estado == 'cancelado':
+        return Response(
+            {'error': 'Este evento ya se encuentra cancelado.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    evento.estado = 'cancelado'
+    evento.save()
+
+    return Response({
+        'mensaje': f"El evento '{evento.nombre}' ha sido cancelado correctamente.",
+        'evento': EventoSerializer(evento).data
+    }, status=status.HTTP_200_OK)
 
 
 # ==========================================================
@@ -372,4 +419,67 @@ def api_organizador_dashboard(request):
         'total_tickets_vendidos': total_tickets_vendidos,
         'total_recaudacion': total_recaudacion,
         'eventos': EventoSerializer(eventos, many=True).data
+    })
+
+
+# ==========================================================
+# 6. 🆕 CAMBIO 3: HISTORIAL DE VENTAS
+# ==========================================================
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_historial_ventas(request):
+    """
+    🆕 CAMBIO 3 - Endpoint: Historial completo de ventas con filtros opcionales.
+
+    Parámetros GET opcionales:
+        - evento_id: Filtrar ventas de un evento específico
+        - organizador_id: Filtrar ventas de los eventos de un organizador
+        - fecha_desde: Fecha de inicio (YYYY-MM-DD)
+        - fecha_hasta: Fecha de fin (YYYY-MM-DD)
+
+    Ejemplo de uso:
+        GET /api/ventas/historial/
+        GET /api/ventas/historial/?evento_id=3
+        GET /api/ventas/historial/?fecha_desde=2026-01-01&fecha_hasta=2026-12-31
+    """
+    compras = Compra.objects.all().select_related(
+        'usuario',
+        'tipo_ticket',
+        'tipo_ticket__evento',
+        'tipo_ticket__evento__organizador'
+    ).order_by('-fecha_compra')
+
+    # Filtro por evento específico
+    evento_id = request.GET.get('evento_id')
+    if evento_id:
+        compras = compras.filter(tipo_ticket__evento_id=evento_id)
+
+    # Filtro por organizador
+    organizador_id = request.GET.get('organizador_id')
+    if organizador_id:
+        compras = compras.filter(tipo_ticket__evento__organizador_id=organizador_id)
+
+    # Filtro por rango de fechas
+    fecha_desde = request.GET.get('fecha_desde')
+    if fecha_desde:
+        compras = compras.filter(fecha_compra__date__gte=fecha_desde)
+
+    fecha_hasta = request.GET.get('fecha_hasta')
+    if fecha_hasta:
+        compras = compras.filter(fecha_compra__date__lte=fecha_hasta)
+
+    # Calcular totales del resultado filtrado
+    totales = compras.aggregate(
+        total_tickets=Sum('cantidad'),
+        total_ingresos=Sum('total')
+    )
+
+    return Response({
+        'resumen': {
+            'total_ventas': compras.count(),
+            'total_tickets_vendidos': totales['total_tickets'] or 0,
+            'total_ingresos_bs': float(totales['total_ingresos'] or 0),
+        },
+        'ventas': CompraSerializer(compras, many=True).data
     })

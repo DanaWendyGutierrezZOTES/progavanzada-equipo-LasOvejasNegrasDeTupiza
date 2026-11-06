@@ -23,6 +23,12 @@ urlpatterns = [
     path('api/compras/', api_views.api_compras_lista, name='api_compras_lista'),
     path('api/compras/<int:pk>/', api_views.api_compra_detalle, name='api_compra_detalle'),
 
+    # 🆕 CAMBIO 2: Cancelar evento (solo admin puede usar este endpoint)
+    path('api/eventos/<int:pk>/cancelar/', api_views.api_cancelar_evento, name='api_cancelar_evento'),
+
+    # 🆕 CAMBIO 3: Historial de ventas con filtros opcionales
+    path('api/ventas/historial/', api_views.api_historial_ventas, name='api_historial_ventas'),
+
     # Dashboard Organizador
     path('api/organizador/dashboard/', api_views.api_organizador_dashboard, name='api_organizador_dashboard'),
 
