@@ -1,12 +1,13 @@
 // ========================================================
-// PÁGINA: REGISTROPAGE (DISEÑO MODERNO 2026)
-// Registro público EXCLUSIVO para Compradores
-// (Los Organizadores son registrados únicamente por el Administrador)
+// PÁGINA: REGISTROPAGE (Registro Público de Comprador)
+// Registro público seguro exclusivo para asistentes y compradores
 // ========================================================
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import AlertBanner from '../components/common/AlertBanner';
 
 export default function RegistroPage() {
   const [formData, setFormData] = useState({
@@ -19,7 +20,10 @@ export default function RegistroPage() {
   });
 
   const [error, setError] = useState('');
+  const [procesando, setProcesando] = useState(false);
+
   const { registro } = useAuth();
+  const { notifySuccess } = useToast();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,7 +31,7 @@ export default function RegistroPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -36,8 +40,15 @@ export default function RegistroPage() {
       return;
     }
 
+    if (formData.password.length < 3) {
+      setError('La contraseña debe tener al menos 3 caracteres.');
+      return;
+    }
+
+    setProcesando(true);
+
     try {
-      const nuevo = registro({
+      const nuevo = await registro({
         username: formData.username,
         nombre: formData.nombre,
         email: formData.email,
@@ -45,10 +56,12 @@ export default function RegistroPage() {
         password: formData.password
       });
 
-      alert(`¡Bienvenido a TicketEventos, ${nuevo.nombre || nuevo.username}! Tu cuenta de comprador ha sido creada.`);
+      notifySuccess(`¡Bienvenido a TicketEventos, ${nuevo.nombre || nuevo.username}! Tu cuenta de comprador ha sido creada.`);
       navigate('/');
     } catch (err) {
       setError(err.message || 'Error al registrar el usuario');
+    } finally {
+      setProcesando(false);
     }
   };
 
@@ -58,31 +71,26 @@ export default function RegistroPage() {
         <div className="col-md-7 col-lg-6">
           <div className="glass-panel p-4 p-md-5">
             <div className="text-center mb-4">
-              <div className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                   style={{ width: '56px', height: '56px', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+              <div className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-lg"
+                   style={{ width: '60px', height: '60px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.35)' }}>
                 <i className="bi bi-person-plus-fill fs-3"></i>
               </div>
               <h3 className="fw-extrabold text-white mb-1">Registro de Comprador</h3>
-              <p className="text-muted small">Crea tu cuenta para comprar y gestionar tus entradas oficiales</p>
+              <p className="text-muted small">Crea tu cuenta para comprar y gestionar tus entradas oficiales en Bolivia</p>
             </div>
 
             {/* Aviso informativo sobre el rol de comprador */}
             <div className="p-3 rounded-4 mb-4 d-flex align-items-center gap-3 border"
                  style={{ background: 'rgba(99, 102, 241, 0.08)', borderColor: 'rgba(99, 102, 241, 0.25)' }}>
-              <i className="bi bi-info-circle-fill text-primary fs-4"></i>
+              <i className="bi bi-info-circle-fill text-primary fs-4 flex-shrink-0"></i>
               <div className="small text-muted">
                 <strong className="text-white d-block">Cuenta de Asistente / Comprador</strong>
-                Podrás explorar cartelera, comprar entradas y descargar tus pases QR.
+                Podrás explorar cartelera, comprar entradas en Bolivianos (Bs) y descargar tus pases QR.
                 *(Los Organizadores son registrados exclusivamente por el Administrador).*
               </div>
             </div>
 
-            {error && (
-              <div className="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-3" role="alert">
-                <i className="bi bi-exclamation-circle"></i>
-                <span>{error}</span>
-              </div>
-            )}
+            <AlertBanner type="danger" message={error} onDismiss={() => setError('')} />
 
             <form onSubmit={handleSubmit}>
               <div className="row g-3 mb-3">
@@ -165,14 +173,22 @@ export default function RegistroPage() {
                 </div>
               </div>
 
-              <button type="submit" className="btn-modern-primary w-100 py-2">
-                Crear Mi Cuenta de Comprador
+              <button
+                type="submit"
+                disabled={procesando}
+                className="btn-modern-primary w-100 py-2 fs-6"
+              >
+                {procesando ? (
+                  <span>Registrando Cuenta...</span>
+                ) : (
+                  <span><i className="bi bi-person-check me-1"></i> Registrar Cuenta de Comprador</span>
+                )}
               </button>
             </form>
 
-            <div className="text-center mt-4">
-              <span className="small text-muted">¿Ya tienes cuenta? </span>
-              <Link to="/login" className="small fw-bold text-info text-decoration-none">
+            <div className="text-center mt-3">
+              <span className="small text-muted">¿Ya tienes una cuenta creada? </span>
+              <Link to="/login" className="small text-info text-decoration-none fw-semibold">
                 Inicia sesión aquí
               </Link>
             </div>

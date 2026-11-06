@@ -1,21 +1,28 @@
 // ========================================================
-// COMPONENTE: NAVBAR (DISEÑO MODERNO 2026)
-// Barra de navegación flotante con efecto cristal (Glassmorphism),
-// selector rápido de rol para presentaciones y diseño responsive
+// COMPONENTE: NAVBAR (Barra de Navegación Ultra-Moderna)
+// Glassmorphism, selector rápido de rol para defensa y feedback instantáneo
 // ========================================================
 
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 export default function Navbar() {
   const { usuario, logout, esOrganizador, cambiarUsuarioRapido } = useAuth();
+  const { notifyInfo } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogout = () => {
     logout();
+    notifyInfo('Has cerrado sesión.');
     navigate('/');
+  };
+
+  const handleCambioRol = (rol) => {
+    cambiarUsuarioRapido(rol);
+    notifyInfo(`Modo de prueba activado: ${rol.toUpperCase()}`);
   };
 
   const isActive = (path) => location.pathname === path;
@@ -38,6 +45,9 @@ export default function Navbar() {
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarContent"
+          aria-controls="navbarContent"
+          aria-expanded="false"
+          aria-label="Abrir menú"
         >
           <i className="bi bi-list fs-2"></i>
         </button>
@@ -61,7 +71,7 @@ export default function Navbar() {
                   className={`nav-link px-3 py-2 rounded-pill fw-semibold ${isActive('/mis-tickets') ? 'text-white bg-white bg-opacity-10' : 'text-light text-opacity-75'}`}
                   to="/mis-tickets"
                 >
-                  <i className="bi bi-ticket-detailed me-1 text-primary"></i> Mis Tickets
+                  <i className="bi bi-ticket-detailed me-1 text-primary"></i> Mis Pases
                 </Link>
               </li>
             )}
@@ -74,7 +84,7 @@ export default function Navbar() {
                     className={`nav-link px-3 py-2 rounded-pill fw-semibold ${isActive('/organizador/panel') ? 'text-warning bg-warning bg-opacity-10' : 'text-warning text-opacity-80'}`}
                     to="/organizador/panel"
                   >
-                    <i className="bi bi-speedometer2 me-1"></i> Panel Organizador
+                    <i className="bi bi-speedometer2 me-1"></i> Panel Control
                   </Link>
                 </li>
                 <li className="nav-item">
@@ -82,7 +92,7 @@ export default function Navbar() {
                     className={`nav-link px-3 py-2 rounded-pill fw-semibold ${isActive('/evento/crear') ? 'text-info bg-info bg-opacity-10' : 'text-info text-opacity-80'}`}
                     to="/evento/crear"
                   >
-                    <i className="bi bi-plus-circle me-1"></i> Publicar Evento
+                    <i className="bi bi-plus-circle me-1"></i> Publicar Concierto
                   </Link>
                 </li>
               </>
@@ -92,23 +102,23 @@ export default function Navbar() {
           {/* Selector Rápido de Demo (ideal para defensa y presentación) */}
           <div className="d-flex align-items-center gap-1 p-1 rounded-pill my-2 my-lg-0 me-lg-3"
                style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <span className="small text-muted px-2 d-none d-xl-inline">Rol:</span>
+            <span className="small text-muted px-2 d-none d-xl-inline">Rol Demo:</span>
             <button
-              onClick={() => cambiarUsuarioRapido('admin')}
+              onClick={() => handleCambioRol('admin')}
               className={`btn btn-sm rounded-pill px-2 py-1 fw-semibold ${usuario?.username === 'admin' ? 'btn-modern-primary text-white' : 'btn-link text-muted text-decoration-none'}`}
               title="Cambiar a rol Administrador"
             >
               Admin
             </button>
             <button
-              onClick={() => cambiarUsuarioRapido('organizador')}
+              onClick={() => handleCambioRol('organizador')}
               className={`btn btn-sm rounded-pill px-2 py-1 fw-semibold ${usuario?.username === 'organizador' ? 'btn-modern-primary text-white' : 'btn-link text-muted text-decoration-none'}`}
               title="Cambiar a rol Organizador"
             >
               Organizador
             </button>
             <button
-              onClick={() => cambiarUsuarioRapido('comprador')}
+              onClick={() => handleCambioRol('comprador')}
               className={`btn btn-sm rounded-pill px-2 py-1 fw-semibold ${usuario?.username === 'comprador' ? 'btn-modern-primary text-white' : 'btn-link text-muted text-decoration-none'}`}
               title="Cambiar a rol Comprador"
             >
@@ -121,7 +131,7 @@ export default function Navbar() {
             {usuario ? (
               <div className="d-flex align-items-center gap-3">
                 <div className="d-flex align-items-center gap-2">
-                  <div className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+                  <div className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow"
                        style={{
                          width: '38px',
                          height: '38px',
@@ -148,7 +158,7 @@ export default function Navbar() {
                   Entrar
                 </Link>
                 <Link to="/registro" className="btn btn-modern-primary btn-sm">
-                  Registrarse
+                  Crear Cuenta
                 </Link>
               </div>
             )}
