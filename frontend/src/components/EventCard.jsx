@@ -1,6 +1,6 @@
 // ========================================================
-// COMPONENTE: EVENTCARD (DISEÑO PROFESIONAL ULTRA-MODERNO)
-// Inspirado en Spotify Live, Dice.fm y Ticketmaster Pro
+// COMPONENTE: EVENTCARD (Tarjeta de Concierto Ultra-Moderna)
+// Diseño cinematográfico con metadatos de recintos bolivianos
 // ========================================================
 
 import React from 'react';
@@ -9,9 +9,9 @@ import { formatBs, formatCalendarBadge } from '../utils/formatters';
 
 export default function EventCard({ evento }) {
   const cuposTotales = evento.cupo_total || 5000;
-  const cuposDisponibles = evento.tipos_ticket
+  const cuposDisponibles = evento.tipos_ticket && evento.tipos_ticket.length > 0
     ? evento.tipos_ticket.reduce((total, t) => total + (Number(t.cantidad_disponible) || 0), 0)
-    : 0;
+    : (evento.cupo_total || 0);
 
   const precios = evento.tipos_ticket && evento.tipos_ticket.length > 0
     ? evento.tipos_ticket.map(t => Number(t.precio))
@@ -22,6 +22,10 @@ export default function EventCard({ evento }) {
   const { dia, mes } = formatCalendarBadge(evento.fecha);
   const estaAgotado = cuposDisponibles <= 0;
   const quedanPocos = cuposDisponibles > 0 && cuposDisponibles < 100;
+
+  // Icono según tipo de recinto o categoría
+  const esTeatro = evento.tipo_recinto === 'teatro' || evento.lugar?.toLowerCase().includes('teatro');
+  const esArena = evento.tipo_recinto === 'arena' || evento.tipo_recinto === 'campo_ferial' || evento.lugar?.toLowerCase().includes('arena') || evento.lugar?.toLowerCase().includes('parque');
 
   return (
     <div className="col">
@@ -68,14 +72,14 @@ export default function EventCard({ evento }) {
           <div className="position-absolute bottom-0 start-0 m-3 end-0 pe-3">
             <span className="d-inline-flex align-items-center gap-1 px-2 py-1 rounded-2 text-truncate"
                   style={{
-                    background: 'rgba(0, 0, 0, 0.65)',
+                    background: 'rgba(0, 0, 0, 0.7)',
                     backdropFilter: 'blur(8px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
                     fontSize: '0.75rem',
                     color: '#e2e8f0',
                     maxWidth: '100%'
                   }}>
-              <i className="bi bi-building text-warning"></i>
+              <i className={`bi ${esTeatro ? 'bi-mask text-warning' : esArena ? 'bi-speaker text-info' : 'bi-building text-warning'}`}></i>
               <strong className="text-white text-truncate">{evento.estadio_nombre || evento.lugar}</strong>
             </span>
           </div>
@@ -84,7 +88,7 @@ export default function EventCard({ evento }) {
         {/* Cuerpo de la Tarjeta */}
         <div className="p-4 d-flex flex-column flex-grow-1">
           {evento.subtitulo && (
-            <div className="text-dim small text-uppercase fw-semibold mb-1" style={{ fontSize: '0.72rem', letterSpacing: '0.5px' }}>
+            <div className="text-dim small text-uppercase fw-semibold mb-1 text-truncate" style={{ fontSize: '0.72rem', letterSpacing: '0.5px' }}>
               {evento.subtitulo}
             </div>
           )}

@@ -529,4 +529,78 @@ body {
   }
 }
 
+/* --------------------------------------------------------
+   MODAL NATIVO (<dialog>) & ANIMACIONES MODERNAS (2026)
+-------------------------------------------------------- */
+dialog:modal {
+  overscroll-behavior: contain;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+dialog::backdrop {
+  background: rgba(4, 7, 13, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.modern-native-dialog {
+  animation: dialog-pop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dialog-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideIn {
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.link-hover {
+  transition: all 0.2s ease;
+}
+.link-hover:hover {
+  color: #38bdf8 !important;
+  transform: translateX(-2px);
+}
+
+.recintos-scroll-list::-webkit-scrollbar {
+  width: 6px;
+}
+.recintos-scroll-list::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+
 

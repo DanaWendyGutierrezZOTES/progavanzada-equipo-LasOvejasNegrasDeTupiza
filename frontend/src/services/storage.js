@@ -2,6 +2,7 @@
 // SERVICIO DE DATOS Y SINCRONIZACIÓN (storage.js)
 // Conecta en tiempo real con el Backend Django REST API
 // y mantiene la persistencia con SQLite en el servidor.
+// Incluye soporte offline robusto y auto-fusión de datos.
 // ========================================================
 
 import { EVENTOS_INICIALES, COMPRAS_INICIALES, USUARIOS_INICIALES } from '../data/mockData';
@@ -69,6 +70,19 @@ export function obtenerEventos() {
     escribirStorage(CLAVE_EVENTOS, EVENTOS_INICIALES);
     return EVENTOS_INICIALES;
   }
+
+  // Fusión inteligente: Si el caché local tiene menos eventos que los iniciales de Bolivia,
+  // agregamos los nuevos eventos sin sobreescribir los cambios del usuario
+  if (guardados.length < EVENTOS_INICIALES.length) {
+    const idsExistentes = new Set(guardados.map(e => Number(e.id)));
+    const nuevos = EVENTOS_INICIALES.filter(e => !idsExistentes.has(Number(e.id)));
+    if (nuevos.length > 0) {
+      const actualizados = [...guardados, ...nuevos];
+      escribirStorage(CLAVE_EVENTOS, actualizados);
+      return actualizados;
+    }
+  }
+
   return guardados;
 }
 
@@ -171,7 +185,7 @@ export async function eliminarTipoTicket(eventoId, ticketId) {
 
 export function obtenerCompras() {
   const guardadas = leerStorage(CLAVE_COMPRAS, null);
-  if (!guardadas) {
+  if (!guardadas || guardadas.length === 0) {
     escribirStorage(CLAVE_COMPRAS, COMPRAS_INICIALES);
     return COMPRAS_INICIALES;
   }
@@ -195,39 +209,47 @@ export async function realizarCompra({ usuario, eventoId, tipoTicketId, cantidad
       usuario
     });
   } catch (err) {
-    console.warn('Error en llamada a backend Django:', err);
-    throw err;
+    console.warn('Backend Django no respondió, continuando con transacción local:', err);
   }
 
   // 2. Reflejar descuento de cupo en caché local
   const eventos = obtenerEventos();
   const evento = eventos.find(e => Number(e.id) === Number(eventoId));
+  let tipoTicket = null;
   if (evento) {
-    const tipoTicket = evento.tipos_ticket?.find(t => Number(t.id) === Number(tipoTicketId));
+    tipoTicket = evento.tipos_ticket?.find(t => Number(t.id) === Number(tipoTicketId));
     if (tipoTicket) {
       tipoTicket.cantidad_disponible = Math.max(0, tipoTicket.cantidad_disponible - Number(cantidad));
       escribirStorage(CLAVE_EVENTOS, eventos);
     }
   }
 
-  // 3. Guardar registro en historial local
+  // 3. Generar código y guardar registro en historial local
+  const codigo = `TKT-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+  const precioUnitario = tipoTicket ? Number(tipoTicket.precio) : (evento?.precio_base || 50);
+  const total = precioUnitario * Number(cantidad);
+
   const compras = obtenerCompras();
   const nuevaCompra = compraBackend || {
     id: compras.length > 0 ? Math.max(...compras.map(c => Number(c.id))) + 1 : 1,
-    codigo_ticket: `TKT-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
+    codigo_ticket: codigo,
     usuario_id: usuario?.id || 1,
     usuario_nombre: usuario?.nombre || usuario?.username || 'Comprador',
+    comprador_nombre: usuario?.nombre || usuario?.username || 'Comprador',
+    comprador_email: usuario?.email || 'comprador@ticketera.local',
+    comprador_telefono: usuario?.telefono || '',
     evento_id: evento ? evento.id : eventoId,
     evento_nombre: evento ? evento.nombre : 'Evento',
     evento_fecha: evento ? evento.fecha : '',
     evento_hora: evento ? evento.hora : '',
     evento_lugar: evento ? evento.lugar : '',
     tipo_ticket_id: tipoTicketId,
-    tipo_ticket_nombre: 'Entrada General',
+    tipo_ticket_nombre: tipoTicket ? tipoTicket.nombre : 'Entrada General',
     cantidad: Number(cantidad),
-    precio_unitario: 50,
-    total: 50 * Number(cantidad),
-    fecha_compra: new Date().toISOString()
+    precio_unitario: precioUnitario,
+    total: total,
+    fecha_compra: new Date().toISOString(),
+    qr_url: `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${codigo}`
   };
 
   compras.unshift(nuevaCompra);
@@ -253,8 +275,7 @@ export async function registrarUsuario(nuevoUsuario) {
   try {
     usuarioBackend = await AuthAPI.registro(nuevoUsuario);
   } catch (err) {
-    console.warn('Registro en backend falló o usuario existente:', err);
-    throw err;
+    console.warn('Registro en backend falló o usuario existente, aplicando local:', err);
   }
 
   const usuarios = obtenerUsuarios();
