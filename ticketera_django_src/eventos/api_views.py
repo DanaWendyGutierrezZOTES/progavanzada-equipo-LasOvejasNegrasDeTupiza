@@ -356,6 +356,18 @@ def api_compras_lista(request):
             # Bloqueo select_for_update para evitar sobreventa concurrente
             tipo_ticket = get_object_or_404(TipoTicket.objects.select_for_update(), pk=tipo_ticket_id)
 
+            # 🆕 CAMBIO 3: No se puede comprar tickets de un evento cancelado
+            if tipo_ticket.evento.estado == 'cancelado':
+                return Response({
+                    'error': 'Este evento ha sido cancelado. No se pueden comprar tickets.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # 🆕 CAMBIO 3: No se puede comprar tickets de un evento finalizado
+            if tipo_ticket.evento.estado == 'finalizado':
+                return Response({
+                    'error': 'Este evento ya finalizó. No se pueden comprar tickets.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
             if tipo_ticket.cantidad_disponible < cantidad:
                 return Response({
                     'error': f'Solo quedan {tipo_ticket.cantidad_disponible} entradas disponibles'

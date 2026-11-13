@@ -44,15 +44,24 @@ class EventoSerializer(serializers.ModelSerializer):
     total_vendidos = serializers.ReadOnlyField()
     ingresos_totales = serializers.ReadOnlyField()
 
+    # 🆕 CAMBIO 1: Mostrar capacidad_maxima y estado en la API
+    # Sin esto, los campos que agregamos la semana pasada NO aparecian en la respuesta JSON
+    capacidad_maxima = serializers.IntegerField(read_only=True)
+    estado = serializers.CharField(read_only=True)
+    estado_display = serializers.CharField(source='get_estado_display', read_only=True)
+
     class Meta:
         model = Evento
         fields = [
             'id', 'nombre', 'subtitulo', 'categoria', 'ciudad', 'descripcion',
             'fecha', 'hora', 'lugar', 'estadio_nombre', 'capacidad_estadio',
             'ubicacion_mapa', 'lat', 'lng', 'sectores_geograficos',
-            'imagen_url', 'precio_base', 'cupo_total', 'organizador_id',
-            'organizador_nombre', 'cupos_disponibles', 'total_vendidos',
-            'ingresos_totales', 'tipos_ticket'
+            'imagen_url', 'precio_base', 'cupo_total',
+            # 🆕 Campos nuevos visibles en la API
+            'capacidad_maxima', 'estado', 'estado_display',
+            'organizador_id', 'organizador_nombre',
+            'cupos_disponibles', 'total_vendidos', 'ingresos_totales',
+            'tipos_ticket'
         ]
 
     def get_organizador_nombre(self, obj):
