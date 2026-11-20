@@ -19,11 +19,11 @@
   --accent-emerald: #10b981;
   --accent-amber: #f59e0b;
   
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-main: #f1f5f9;
+  --text-muted: #b0c4d8;
+  --text-dim: #8899b0;
   
-  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.14);
   --border-hover: rgba(99, 102, 241, 0.4);
   
   --radius-sm: 8px;
@@ -414,8 +414,35 @@ body {
   animation: radar-pulse 2s infinite;
 }
 
-/* ========================================================
-   REGLAS DE IMPRESIÓN OFICIALES (1 SOLA HOJA DE PAPEL)
+/* --------------------------------------------------------
+   TEXTOS LEGIBLES — clases de utilidad mejoradas
+-------------------------------------------------------- */
+.text-dim {
+  color: var(--text-dim) !important;
+}
+.text-readable {
+  color: var(--text-muted) !important;
+}
+
+/* Labels de formulario mejorados */
+.form-label {
+  color: var(--text-muted) !important;
+}
+
+/* Tablas oscuras: encabezados más visibles */
+.table-dark thead th {
+  color: #b0c4d8 !important;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Badge de sectores en tabla */
+.table-dark td .text-dim {
+  color: #8899b0 !important;
+}
+
+
    Optimizado para impresoras (Epson, HP, etc.) y Guardar como PDF
 ======================================================== */
 @media print {

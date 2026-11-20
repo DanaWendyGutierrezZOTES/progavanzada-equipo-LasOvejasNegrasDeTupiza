@@ -61,6 +61,45 @@ export async function sincronizarConBackend() {
 sincronizarConBackend();
 
 // --------------------------------------------------------
+// AUTO-REFRESH: SINCRONIZACIÓN AUTOMÁTICA CADA 30 SEGUNDOS
+// Detecta cambios hechos desde Postman o cualquier cliente HTTP
+// sin necesidad de recargar la página manualmente (F5).
+// --------------------------------------------------------
+
+let _autoRefreshInterval = null;
+
+export function iniciarAutoRefresh(intervaloMs = 30000) {
+  if (_autoRefreshInterval) return; // Ya está corriendo
+  _autoRefreshInterval = setInterval(async () => {
+    try {
+      const eventosApi = await EventosAPI.listar().catch(() => null);
+      const comprasApi = await ComprasAPI.listar().catch(() => null);
+
+      if (Array.isArray(eventosApi) && eventosApi.length > 0) {
+        escribirStorage(CLAVE_EVENTOS, eventosApi);
+      }
+      if (Array.isArray(comprasApi)) {
+        escribirStorage(CLAVE_COMPRAS, comprasApi);
+      }
+    } catch {
+      // Sin conexión — continúa en modo offline
+    }
+  }, intervaloMs);
+  console.info(`[TicketEventos] Auto-refresh activo: sincronizando cada ${intervaloMs / 1000}s con Django API`);
+}
+
+export function detenerAutoRefresh() {
+  if (_autoRefreshInterval) {
+    clearInterval(_autoRefreshInterval);
+    _autoRefreshInterval = null;
+    console.info('[TicketEventos] Auto-refresh detenido.');
+  }
+}
+
+// Iniciar auto-refresh automáticamente al cargar el módulo
+iniciarAutoRefresh(30000);
+
+// --------------------------------------------------------
 // EVENTOS
 // --------------------------------------------------------
 

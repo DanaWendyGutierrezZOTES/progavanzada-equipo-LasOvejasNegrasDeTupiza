@@ -16,6 +16,7 @@ import EmptyState from '../components/common/EmptyState';
 import { ESTADIOS_BOLIVIA, DEPARTAMENTOS_BOLIVIA, CIUDADES_BOLIVIA } from '../data/estadios';
 
 const CATEGORIAS = ['Todos', 'Rock', 'Electrónica', 'Festivales', 'Jazz'];
+const EVENTOS_POR_PAGINA = 6; // Paginación: 6 eventos por página
 
 export default function EventosPage() {
   const { esOrganizador } = useAuth();
@@ -30,10 +31,15 @@ export default function EventosPage() {
   const [vistaModo, setVistaModo] = useState('grid'); // 'grid' | 'mapa'
   const [estadioSeleccionado, setEstadioSeleccionado] = useState(ESTADIOS_BOLIVIA[0]);
   const [busquedaRecinto, setBusquedaRecinto] = useState('');
+  const [paginaActual, setPaginaActual] = useState(1); // Paginación
 
-  // Carga inicial
+  // Carga inicial y auto-refresh reactivo
   useEffect(() => {
-    setEventos(obtenerEventos());
+    const cargar = () => setEventos(obtenerEventos());
+    cargar();
+    // Escucha actualizaciones del storage (auto-refresh desde Django)
+    window.addEventListener('ticketera_storage_updated', cargar);
+    return () => window.removeEventListener('ticketera_storage_updated', cargar);
   }, []);
 
   // Extraer ciudades dinámicas con eventos activos para chips rápidos
@@ -42,8 +48,9 @@ export default function EventosPage() {
     return ['Todas', ...Array.from(ciudadesSet)];
   }, [eventos]);
 
-  // Filtro de eventos en tiempo real
+  // Filtro de eventos en tiempo real (resetea paginación al filtrar)
   const eventosFiltrados = useMemo(() => {
+    setPaginaActual(1);
     return eventos.filter((ev) => {
       const busq = busqueda.toLowerCase();
       const coincideTexto =
@@ -96,6 +103,7 @@ export default function EventosPage() {
     setCategoriaActiva('Todos');
     setCiudadActiva('Todas');
     setDeptoActivo('Todos');
+    setPaginaActual(1);
   };
 
   const capacidadTotalGraderias = useMemo(() => {
@@ -469,11 +477,63 @@ export default function EventosPage() {
       </div>
 
       {eventosFiltrados.length > 0 ? (
-        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4 mb-5">
-          {eventosFiltrados.map((evento) => (
-            <EventCard key={evento.id} evento={evento} />
-          ))}
-        </div>
+        <>
+          {/* Grid de eventos — solo la página actual */}
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4 mb-4">
+            {eventosFiltrados
+              .slice((paginaActual - 1) * EVENTOS_POR_PAGINA, paginaActual * EVENTOS_POR_PAGINA)
+              .map((evento) => (
+                <EventCard key={evento.id} evento={evento} />
+              ))}
+          </div>
+
+          {/* Paginación */}
+          {eventosFiltrados.length > EVENTOS_POR_PAGINA && (() => {
+            const totalPaginas = Math.ceil(eventosFiltrados.length / EVENTOS_POR_PAGINA);
+            return (
+              <div className="d-flex justify-content-center align-items-center gap-2 mt-2 mb-5 flex-wrap">
+                {/* Botón Anterior */}
+                <button
+                  onClick={() => { setPaginaActual(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  disabled={paginaActual === 1}
+                  className="btn btn-modern-outline btn-sm px-3"
+                  style={{ opacity: paginaActual === 1 ? 0.4 : 1 }}
+                >
+                  <i className="bi bi-chevron-left me-1"></i> Anterior
+                </button>
+
+                {/* Números de página */}
+                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(num => (
+                  <button
+                    key={num}
+                    onClick={() => { setPaginaActual(num); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    className={`btn btn-sm rounded-pill px-3 fw-semibold ${num === paginaActual ? 'btn-modern-primary' : 'btn-modern-outline'}`}
+                    style={{ minWidth: '40px' }}
+                  >
+                    {num}
+                  </button>
+                ))}
+
+                {/* Botón Siguiente */}
+                <button
+                  onClick={() => { setPaginaActual(p => Math.min(totalPaginas, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  disabled={paginaActual === totalPaginas}
+                  className="btn btn-modern-outline btn-sm px-3"
+                  style={{ opacity: paginaActual === totalPaginas ? 0.4 : 1 }}
+                >
+                  Siguiente <i className="bi bi-chevron-right ms-1"></i>
+                </button>
+
+                {/* Indicador de página */}
+                <span className="text-muted small ms-2">
+                  Página <strong className="text-info">{paginaActual}</strong> de <strong>{totalPaginas}</strong>
+                  {' '}&bull;{' '}
+                  <span className="text-dim">{eventosFiltrados.length} conciertos en total</span>
+                </span>
+              </div>
+            );
+          })()}
+        </>
       ) : (
         <EmptyState
           icon="bi-search"

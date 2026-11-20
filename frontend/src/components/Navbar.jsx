@@ -3,7 +3,7 @@
 // Glassmorphism, selector rápido de rol para defensa y feedback instantáneo
 // ========================================================
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -13,6 +13,18 @@ export default function Navbar() {
   const { notifyInfo } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Indicador de sincronización en tiempo real con Django
+  const [sincronizando, setSincronizando] = useState(false);
+
+  useEffect(() => {
+    const handleStorageUpdate = () => {
+      setSincronizando(true);
+      setTimeout(() => setSincronizando(false), 1500);
+    };
+    window.addEventListener('ticketera_storage_updated', handleStorageUpdate);
+    return () => window.removeEventListener('ticketera_storage_updated', handleStorageUpdate);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -98,6 +110,31 @@ export default function Navbar() {
               </>
             )}
           </ul>
+
+          {/* Indicador de sincronización en tiempo real */}
+          <div className="d-flex align-items-center me-2" title={sincronizando ? 'Sincronizando con Django...' : 'En línea — Auto-sync activo'}>
+            <span
+              className="d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill small"
+              style={{
+                background: sincronizando ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${sincronizando ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                fontSize: '0.7rem',
+                color: sincronizando ? '#34d399' : '#64748b',
+                transition: 'all 0.4s ease'
+              }}
+            >
+              <span
+                className={sincronizando ? 'spinner-grow spinner-grow-sm' : ''}
+                style={{
+                  width: '7px', height: '7px',
+                  background: sincronizando ? '#34d399' : '#475569',
+                  borderRadius: '50%',
+                  display: 'inline-block'
+                }}
+              ></span>
+              <span className="d-none d-xl-inline">{sincronizando ? 'Sync...' : 'Live'}</span>
+            </span>
+          </div>
 
           {/* Selector Rápido de Demo (ideal para defensa y presentación) */}
           <div className="d-flex align-items-center gap-1 p-1 rounded-pill my-2 my-lg-0 me-lg-3"

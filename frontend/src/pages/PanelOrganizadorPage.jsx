@@ -13,6 +13,7 @@ import Modal from '../components/common/Modal';
 import ConfirmModal from '../components/common/ConfirmModal';
 import PageHeader from '../components/common/PageHeader';
 import AlertBanner from '../components/common/AlertBanner';
+import GraficasPanel from '../components/GraficasPanel';
 import { formatBs } from '../utils/formatters';
 
 export default function PanelOrganizadorPage() {
@@ -20,6 +21,7 @@ export default function PanelOrganizadorPage() {
   const { notifySuccess, notifyError } = useToast();
 
   const [eventos, setEventos] = useState([]);
+  const [compras, setCompras] = useState([]);
   const [metricas, setMetricas] = useState({
     totalEventos: 0,
     totalTicketsVendidos: 0,
@@ -58,6 +60,7 @@ export default function PanelOrganizadorPage() {
     }, { totalVendidos: 0, totalIngresos: 0 });
 
     setEventos(eventosOrganizador);
+    setCompras(todasLasCompras);
     setMetricas({
       totalEventos: eventosOrganizador.length,
       totalTicketsVendidos: totalVendidos,
@@ -160,6 +163,9 @@ export default function PanelOrganizadorPage() {
           />
         </div>
       </div>
+
+      {/* Gráficas de análisis */}
+      <GraficasPanel eventos={eventos} compras={compras} />
 
       {/* Tabla de Eventos Gestionados */}
       <div className="glass-panel overflow-hidden">
