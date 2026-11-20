@@ -6,7 +6,7 @@ Conecta las rutas HTTP (REST API para React y Web) con sus respectivos Controlad
 en `eventos/controllers/`.
 """
 
-from django.urls import path
+from django.urls import path, re_path
 from .controllers import (
     auth_controller,
     evento_controller,
@@ -30,7 +30,9 @@ urlpatterns = [
     # 2. Controlador de Eventos
     path('api/eventos/', evento_controller.api_eventos_lista, name='api_eventos_lista'),
     path('api/eventos/<int:pk>/', evento_controller.api_evento_detalle, name='api_evento_detalle'),
+    re_path(r'^api/eventos/(?P<pk>\d+)[/\s%0-9a-zA-Z]*$', evento_controller.api_evento_detalle),
     path('api/eventos/<int:pk>/cancelar/', evento_controller.api_cancelar_evento, name='api_cancelar_evento'),
+    re_path(r'^api/eventos/(?P<pk>\d+)/cancelar[/\s%0-9a-zA-Z]*$', evento_controller.api_cancelar_evento),
 
     # 3. Controlador de Tipos de Ticket
     path('api/eventos/<int:evento_id>/tickets/', ticket_controller.api_crear_tipo_ticket, name='api_crear_tipo_ticket'),
@@ -49,6 +51,7 @@ urlpatterns = [
     # 6. Controlador de Recintos y Estadios (CRUD y Eliminación)
     path('api/recintos/', recinto_controller.api_recintos_lista, name='api_recintos_lista'),
     path('api/recintos/<int:pk>/', recinto_controller.api_recinto_detalle, name='api_recinto_detalle'),
+    re_path(r'^api/recintos/(?P<pk>\d+)[/\s%0-9a-zA-Z]*$', recinto_controller.api_recinto_detalle),
 
     # ======================================================
     # Rutas Web Tradicionales (Controlador Web MVC)
