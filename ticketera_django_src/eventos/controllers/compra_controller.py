@@ -31,6 +31,8 @@ def api_compras_lista(request):
     elif request.method == 'POST':
         data = request.data
         tipo_ticket_id = data.get('tipoTicketId') or data.get('tipo_ticket_id')
+        if not tipo_ticket_id:
+            return CompraApiView.error('El campo tipoTicketId o tipo_ticket_id es requerido')
         cantidad = int(data.get('cantidad', 1))
         usuario = Compra.resolver_comprador(data=data, usuario_actual=request.user)
 

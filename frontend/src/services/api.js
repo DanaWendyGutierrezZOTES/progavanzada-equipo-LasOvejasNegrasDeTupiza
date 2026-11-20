@@ -60,6 +60,9 @@ export const EventosAPI = {
   eliminar: (id) => apiFetch(`/eventos/${id}/`, {
     method: 'DELETE'
   }),
+  cancelar: (id) => apiFetch(`/eventos/${id}/cancelar/`, {
+    method: 'POST'
+  }),
   agregarTicket: (eventoId, ticketData) => apiFetch(`/eventos/${eventoId}/tickets/`, {
     method: 'POST',
     body: JSON.stringify(ticketData)
@@ -84,7 +87,11 @@ export const ComprasAPI = {
       usuario_id: usuario_id || usuario?.id,
       usuario
     })
-  })
+  }),
+  historial: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return apiFetch(`/ventas/historial/${query ? `?${query}` : ''}`);
+  }
 };
 
 export const AuthAPI = {

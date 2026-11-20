@@ -13,13 +13,23 @@ from ..models import Evento, TipoTicket
 from ..views import TicketApiView
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
 def api_tickets_lista(request):
-    """Controlador: Lista todos los tipos de tickets o filtra por ?evento_id=X."""
-    evento_id = request.GET.get('evento_id')
-    tickets = TipoTicket.listar_tickets(evento_id=evento_id)
-    return TicketApiView.lista_tickets(tickets)
+    """Controlador: Lista todos los tipos de tickets o crea uno nuevo."""
+    if request.method == 'GET':
+        evento_id = request.GET.get('evento_id')
+        tickets = TipoTicket.listar_tickets(evento_id=evento_id)
+        return TicketApiView.lista_tickets(tickets)
+    elif request.method == 'POST':
+        evento_id = request.data.get('evento_id') or request.data.get('evento')
+        if not evento_id:
+            return TicketApiView.error('El campo evento_id es requerido para crear un ticket')
+        evento = Evento.objects.filter(pk=evento_id).first()
+        if not evento:
+            return TicketApiView.error(f'No se encontró el evento con ID {evento_id}')
+        ticket = TipoTicket.crear_para_evento(evento=evento, data=request.data)
+        return TicketApiView.ticket_creado(ticket)
 
 
 @api_view(['POST'])

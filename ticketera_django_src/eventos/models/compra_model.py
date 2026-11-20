@@ -77,7 +77,9 @@ class Compra(models.Model):
         """
         cantidad = int(cantidad or 1)
         with transaction.atomic():
-            tipo_ticket = get_object_or_404(TipoTicket.objects.select_for_update(), pk=tipo_ticket_id)
+            tipo_ticket = TipoTicket.objects.select_for_update().filter(pk=tipo_ticket_id).first()
+            if not tipo_ticket:
+                raise ValueError(f"No se encontró el tipo de ticket con ID {tipo_ticket_id}")
 
             if tipo_ticket.evento.estado == 'cancelado':
                 raise ValueError("Este evento ha sido cancelado. No se pueden comprar tickets.")
