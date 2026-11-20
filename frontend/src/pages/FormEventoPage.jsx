@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { obtenerEventoPorId, guardarEvento } from '../services/storage';
+import { obtenerEventoPorId, guardarEvento, obtenerRecintos } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import AlertBanner from '../components/common/AlertBanner';
@@ -92,9 +92,11 @@ export default function FormEventoPage() {
     }
   };
 
+  const recintosDisponibles = obtenerRecintos();
+
   const handleSelectEstadio = (e) => {
     const key = e.target.value;
-    const estadio = ESTADIOS_BOLIVIA.find(est => est.key === key);
+    const estadio = recintosDisponibles.find(est => est.key === key || String(est.id) === String(key));
     if (estadio) {
       setFormData(prev => ({
         ...prev,
@@ -106,8 +108,8 @@ export default function FormEventoPage() {
         capacidad_estadio: estadio.capacidad,
         lat: estadio.lat,
         lng: estadio.lng,
-        cupo_total: estadio.capacidadNum || prev.cupo_total,
-        ticket_cupo: estadio.capacidadNum || prev.ticket_cupo
+        cupo_total: estadio.capacidadNum || estadio.capacidad || prev.cupo_total,
+        ticket_cupo: estadio.capacidadNum || estadio.capacidad || prev.ticket_cupo
       }));
       setErrores(prev => ({ ...prev, lugar: '', ciudad: '' }));
     }
@@ -331,36 +333,36 @@ export default function FormEventoPage() {
                 <select className="form-select form-control-modern mb-3" onChange={handleSelectEstadio}>
                   <option value="">-- Elige un recinto preconfigurado de Bolivia --</option>
                   <optgroup label="Tupiza & Potosí">
-                    {ESTADIOS_BOLIVIA.filter(e => e.departamento === 'Potosí').map(est => (
-                      <option key={est.key} value={est.key}>
+                    {recintosDisponibles.filter(e => e.departamento === 'Potosí').map(est => (
+                      <option key={est.key || est.id} value={est.key || est.id}>
                         {est.ciudad === 'Tupiza' ? '⭐' : '🏟️'} {est.nombre} ({est.ciudad} - Cap. {est.capacidad})
                       </option>
                     ))}
                   </optgroup>
                   <optgroup label="La Paz & El Alto">
-                    {ESTADIOS_BOLIVIA.filter(e => e.departamento === 'La Paz').map(est => (
-                      <option key={est.key} value={est.key}>
+                    {recintosDisponibles.filter(e => e.departamento === 'La Paz').map(est => (
+                      <option key={est.key || est.id} value={est.key || est.id}>
                         {est.tipo === 'teatro' ? '🎭' : '🏟️'} {est.nombre} ({est.ciudad} - Cap. {est.capacidad})
                       </option>
                     ))}
                   </optgroup>
                   <optgroup label="Santa Cruz">
-                    {ESTADIOS_BOLIVIA.filter(e => e.departamento === 'Santa Cruz').map(est => (
-                      <option key={est.key} value={est.key}>
+                    {recintosDisponibles.filter(e => e.departamento === 'Santa Cruz').map(est => (
+                      <option key={est.key || est.id} value={est.key || est.id}>
                         🏟️ {est.nombre} ({est.ciudad} - Cap. {est.capacidad})
                       </option>
                     ))}
                   </optgroup>
                   <optgroup label="Cochabamba">
-                    {ESTADIOS_BOLIVIA.filter(e => e.departamento === 'Cochabamba').map(est => (
-                      <option key={est.key} value={est.key}>
+                    {recintosDisponibles.filter(e => e.departamento === 'Cochabamba').map(est => (
+                      <option key={est.key || est.id} value={est.key || est.id}>
                         🏟️ {est.nombre} ({est.ciudad} - Cap. {est.capacidad})
                       </option>
                     ))}
                   </optgroup>
-                  <optgroup label="Otros Departamentos (Sucre, Tarija, Oruro, Beni, Pando)">
-                    {ESTADIOS_BOLIVIA.filter(e => !['La Paz', 'Santa Cruz', 'Cochabamba', 'Potosí'].includes(e.departamento)).map(est => (
-                      <option key={est.key} value={est.key}>
+                  <optgroup label="Otros Departamentos">
+                    {recintosDisponibles.filter(e => !['La Paz', 'Santa Cruz', 'Cochabamba', 'Potosí'].includes(e.departamento)).map(est => (
+                      <option key={est.key || est.id} value={est.key || est.id}>
                         🏟️ {est.nombre} ({est.ciudad} - Cap. {est.capacidad})
                       </option>
                     ))}

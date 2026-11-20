@@ -116,3 +116,22 @@ export const OrganizadorAPI = {
     return apiFetch(`/organizador/dashboard/${query}`);
   }
 };
+
+export const RecintosAPI = {
+  listar: (filtros = {}) => {
+    const params = new URLSearchParams(filtros).toString();
+    return apiFetch(`/recintos/${params ? `?${params}` : ''}`);
+  },
+  obtener: (id) => apiFetch(`/recintos/${id}/`),
+  crear: (recintoData) => apiFetch('/recintos/', {
+    method: 'POST',
+    body: JSON.stringify(recintoData)
+  }),
+  actualizar: (id, recintoData) => apiFetch(`/recintos/${id}/`, {
+    method: 'PUT',
+    body: JSON.stringify(recintoData)
+  }),
+  eliminar: (id) => apiFetch(`/recintos/${id}/`, {
+    method: 'DELETE'
+  })
+};

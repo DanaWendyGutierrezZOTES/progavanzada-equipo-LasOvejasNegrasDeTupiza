@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { obtenerEventos } from '../services/storage';
+import { obtenerEventos, obtenerRecintos } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import EventCard from '../components/EventCard';
 import EventCarousel from '../components/EventCarousel';
@@ -24,24 +24,33 @@ export default function EventosPage() {
 
   // Estados
   const [eventos, setEventos] = useState([]);
+  const [recintos, setRecintos] = useState([]);
   const [busqueda, setBusqueda] = useState('');
   const [filtroFecha, setFiltroFecha] = useState('');
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [ciudadActiva, setCiudadActiva] = useState('Todas');
   const [deptoActivo, setDeptoActivo] = useState('Todos');
   const [vistaModo, setVistaModo] = useState('grid'); // 'grid' | 'mapa'
-  const [estadioSeleccionado, setEstadioSeleccionado] = useState(ESTADIOS_BOLIVIA[0]);
+  const [estadioSeleccionado, setEstadioSeleccionado] = useState(null);
   const [busquedaRecinto, setBusquedaRecinto] = useState('');
   const [paginaActual, setPaginaActual] = useState(1); // Paginación
 
   // Carga inicial y auto-refresh reactivo
   useEffect(() => {
-    const cargar = () => setEventos(obtenerEventos());
+    const cargar = () => {
+      const evs = obtenerEventos();
+      const recs = obtenerRecintos();
+      setEventos(evs);
+      setRecintos(recs);
+      if (!estadioSeleccionado && recs.length > 0) {
+        setEstadioSeleccionado(recs[0]);
+      }
+    };
     cargar();
     // Escucha actualizaciones del storage (auto-refresh desde Django)
     window.addEventListener('ticketera_storage_updated', cargar);
     return () => window.removeEventListener('ticketera_storage_updated', cargar);
-  }, []);
+  }, [estadioSeleccionado]);
 
   // Extraer ciudades dinámicas con eventos activos para chips rápidos
   const ciudadesConEventos = useMemo(() => {
@@ -84,19 +93,19 @@ export default function EventosPage() {
 
   // Filtro para el explorador de recintos en Google Maps
   const recintosFiltrados = useMemo(() => {
-    return ESTADIOS_BOLIVIA.filter(est => {
+    return recintos.filter(est => {
       const q = busquedaRecinto.toLowerCase();
       const coincideTexto =
         !busquedaRecinto ||
         est.nombre.toLowerCase().includes(q) ||
         est.ciudad.toLowerCase().includes(q) ||
-        est.departamento.toLowerCase().includes(q) ||
+        (est.departamento && est.departamento.toLowerCase().includes(q)) ||
         (est.concierto && est.concierto.toLowerCase().includes(q));
 
       const coincideDepto = deptoActivo === 'Todos' || est.departamento === deptoActivo;
       return coincideTexto && coincideDepto;
     });
-  }, [busquedaRecinto, deptoActivo]);
+  }, [recintos, busquedaRecinto, deptoActivo]);
 
   const limpiarFiltros = () => {
     setBusqueda('');
@@ -108,8 +117,8 @@ export default function EventosPage() {
   };
 
   const capacidadTotalGraderias = useMemo(() => {
-    return ESTADIOS_BOLIVIA.reduce((acc, est) => acc + (est.capacidadNum || 15000), 0);
-  }, []);
+    return recintos.reduce((acc, est) => acc + (est.capacidadNum || est.capacidad || 15000), 0);
+  }, [recintos]);
 
   return (
     <div className="container py-4">
@@ -140,7 +149,7 @@ export default function EventosPage() {
             {/* Métricas destacadas del sistema */}
             <div className="d-flex flex-wrap gap-3 mb-4">
               <div className="px-3 py-2 rounded-3 border" style={{ background: 'rgba(255, 255, 255, 0.04)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
-                <div className="fs-5 fw-extrabold text-info">{ESTADIOS_BOLIVIA.length} Recintos</div>
+                <div className="fs-5 fw-extrabold text-info">{recintos.length} Recintos</div>
                 <div className="text-dim small" style={{ fontSize: '0.75rem' }}>Estadios, Teatros y Arenas en Bolivia</div>
               </div>
               <div className="px-3 py-2 rounded-3 border" style={{ background: 'rgba(255, 255, 255, 0.04)', borderColor: 'rgba(255, 255, 255, 0.08)' }}>
@@ -165,7 +174,7 @@ export default function EventosPage() {
                 onClick={() => setVistaModo('mapa')}
                 className={`btn ${vistaModo === 'mapa' ? 'btn-modern-primary' : 'btn-modern-outline'} text-info`}
               >
-                <i className="bi bi-geo-alt-fill me-1 text-danger"></i> Red de Recintos en Google Maps ({ESTADIOS_BOLIVIA.length})
+                <i className="bi bi-geo-alt-fill me-1 text-danger"></i> Red de Recintos en Google Maps ({recintos.length})
               </button>
 
               {esOrganizador && (

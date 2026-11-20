@@ -6,11 +6,13 @@
 // ========================================================
 
 import { EVENTOS_INICIALES, COMPRAS_INICIALES, USUARIOS_INICIALES } from '../data/mockData';
-import { EventosAPI, ComprasAPI, AuthAPI } from './api';
+import { ESTADIOS_BOLIVIA } from '../data/estadios';
+import { EventosAPI, ComprasAPI, AuthAPI, RecintosAPI } from './api';
 
 const CLAVE_EVENTOS = 'ticketera_eventos';
 const CLAVE_COMPRAS = 'ticketera_compras';
 const CLAVE_USUARIOS = 'ticketera_usuarios';
+const CLAVE_RECINTOS = 'ticketera_recintos';
 
 // Helpers seguros para lectura y escritura en localStorage
 function leerStorage(clave, defecto) {
@@ -37,13 +39,14 @@ function escribirStorage(clave, valor) {
 
 export async function sincronizarConBackend() {
   try {
-    const [eventosApi, comprasApi, usuariosApi] = await Promise.all([
+    const [eventosApi, comprasApi, usuariosApi, recintosApi] = await Promise.all([
       EventosAPI.listar().catch(() => null),
       ComprasAPI.listar().catch(() => null),
-      AuthAPI.usuarios().catch(() => null)
+      AuthAPI.usuarios().catch(() => null),
+      RecintosAPI.listar().catch(() => null)
     ]);
 
-    if (Array.isArray(eventosApi) && eventosApi.length > 0) {
+    if (Array.isArray(eventosApi)) {
       escribirStorage(CLAVE_EVENTOS, eventosApi);
     }
     if (Array.isArray(comprasApi)) {
@@ -51,6 +54,9 @@ export async function sincronizarConBackend() {
     }
     if (Array.isArray(usuariosApi) && usuariosApi.length > 0) {
       escribirStorage(CLAVE_USUARIOS, usuariosApi);
+    }
+    if (Array.isArray(recintosApi)) {
+      escribirStorage(CLAVE_RECINTOS, recintosApi);
     }
   } catch (error) {
     console.info('Backend Django en modo offline o sincronizando...', error);
@@ -61,25 +67,31 @@ export async function sincronizarConBackend() {
 sincronizarConBackend();
 
 // --------------------------------------------------------
-// AUTO-REFRESH: SINCRONIZACIÓN AUTOMÁTICA CADA 30 SEGUNDOS
+// AUTO-REFRESH: SINCRONIZACIÓN AUTOMÁTICA EN TIEMPO REAL (5s)
 // Detecta cambios hechos desde Postman o cualquier cliente HTTP
-// sin necesidad de recargar la página manualmente (F5).
+// actualizando la interfaz instantáneamente.
 // --------------------------------------------------------
 
 let _autoRefreshInterval = null;
 
-export function iniciarAutoRefresh(intervaloMs = 30000) {
-  if (_autoRefreshInterval) return; // Ya está corriendo
+export function iniciarAutoRefresh(intervaloMs = 5000) {
+  if (_autoRefreshInterval) return;
   _autoRefreshInterval = setInterval(async () => {
     try {
-      const eventosApi = await EventosAPI.listar().catch(() => null);
-      const comprasApi = await ComprasAPI.listar().catch(() => null);
+      const [eventosApi, comprasApi, recintosApi] = await Promise.all([
+        EventosAPI.listar().catch(() => null),
+        ComprasAPI.listar().catch(() => null),
+        RecintosAPI.listar().catch(() => null)
+      ]);
 
-      if (Array.isArray(eventosApi) && eventosApi.length > 0) {
+      if (Array.isArray(eventosApi)) {
         escribirStorage(CLAVE_EVENTOS, eventosApi);
       }
       if (Array.isArray(comprasApi)) {
         escribirStorage(CLAVE_COMPRAS, comprasApi);
+      }
+      if (Array.isArray(recintosApi)) {
+        escribirStorage(CLAVE_RECINTOS, recintosApi);
       }
     } catch {
       // Sin conexión — continúa en modo offline
@@ -96,8 +108,8 @@ export function detenerAutoRefresh() {
   }
 }
 
-// Iniciar auto-refresh automáticamente al cargar el módulo
-iniciarAutoRefresh(30000);
+// Iniciar auto-refresh automáticamente cada 5 segundos
+iniciarAutoRefresh(5000);
 
 // --------------------------------------------------------
 // EVENTOS
@@ -105,24 +117,10 @@ iniciarAutoRefresh(30000);
 
 export function obtenerEventos() {
   const guardados = leerStorage(CLAVE_EVENTOS, null);
-  if (!guardados || guardados.length === 0) {
-    escribirStorage(CLAVE_EVENTOS, EVENTOS_INICIALES);
-    return EVENTOS_INICIALES;
+  if (guardados !== null && Array.isArray(guardados)) {
+    return guardados;
   }
-
-  // Fusión inteligente: Si el caché local tiene menos eventos que los iniciales de Bolivia,
-  // agregamos los nuevos eventos sin sobreescribir los cambios del usuario
-  if (guardados.length < EVENTOS_INICIALES.length) {
-    const idsExistentes = new Set(guardados.map(e => Number(e.id)));
-    const nuevos = EVENTOS_INICIALES.filter(e => !idsExistentes.has(Number(e.id)));
-    if (nuevos.length > 0) {
-      const actualizados = [...guardados, ...nuevos];
-      escribirStorage(CLAVE_EVENTOS, actualizados);
-      return actualizados;
-    }
-  }
-
-  return guardados;
+  return EVENTOS_INICIALES;
 }
 
 export function obtenerEventoPorId(id) {
@@ -172,6 +170,30 @@ export async function eliminarEvento(id) {
 
   const filtrados = obtenerEventos().filter(e => Number(e.id) !== Number(id));
   escribirStorage(CLAVE_EVENTOS, filtrados);
+  return true;
+}
+
+// --------------------------------------------------------
+// RECINTOS Y ESTADIOS (Conexión directa con SQLite / Django)
+// --------------------------------------------------------
+
+export function obtenerRecintos() {
+  const guardados = leerStorage(CLAVE_RECINTOS, null);
+  if (guardados !== null && Array.isArray(guardados) && guardados.length > 0) {
+    return guardados;
+  }
+  return ESTADIOS_BOLIVIA;
+}
+
+export async function eliminarRecinto(id) {
+  try {
+    await RecintosAPI.eliminar(id);
+  } catch (err) {
+    console.warn('Error al eliminar recinto en backend Django:', err);
+  }
+
+  const filtrados = obtenerRecintos().filter(r => Number(r.id) !== Number(id));
+  escribirStorage(CLAVE_RECINTOS, filtrados);
   return true;
 }
 
