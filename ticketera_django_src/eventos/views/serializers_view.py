@@ -1,6 +1,12 @@
+"""
+[CAPA VISTA - MVC]
+Serializadores de Presentación JSON: Transforman las instancias de la Capa Modelo
+en estructuras JSON estandarizadas para el Frontend React y clientes REST (Postman).
+"""
+
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import PerfilUsuario, Evento, TipoTicket, Compra
+from ..models import PerfilUsuario, Evento, TipoTicket, Compra
 
 
 class PerfilUsuarioSerializer(serializers.ModelSerializer):
@@ -44,14 +50,19 @@ class EventoSerializer(serializers.ModelSerializer):
     total_vendidos = serializers.ReadOnlyField()
     ingresos_totales = serializers.ReadOnlyField()
 
+    capacidad_maxima = serializers.IntegerField(read_only=True)
+    estado = serializers.CharField(read_only=True)
+    estado_display = serializers.CharField(source='get_estado_display', read_only=True)
+
     class Meta:
         model = Evento
         fields = [
             'id', 'nombre', 'subtitulo', 'categoria', 'ciudad', 'descripcion',
             'fecha', 'hora', 'lugar', 'estadio_nombre', 'capacidad_estadio',
             'ubicacion_mapa', 'lat', 'lng', 'sectores_geograficos',
-            'imagen_url', 'precio_base', 'cupo_total', 'organizador_id',
-            'organizador_nombre', 'cupos_disponibles', 'total_vendidos',
+            'imagen_url', 'precio_base', 'cupo_total',
+            'capacidad_maxima', 'estado', 'estado_display',
+            'organizador_id', 'organizador_nombre', 'cupos_disponibles', 'total_vendidos',
             'ingresos_totales', 'tipos_ticket'
         ]
 
