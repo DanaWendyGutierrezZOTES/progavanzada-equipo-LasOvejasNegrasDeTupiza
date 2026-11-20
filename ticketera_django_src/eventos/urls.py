@@ -12,6 +12,7 @@ from .controllers import (
     evento_controller,
     ticket_controller,
     compra_controller,
+    recinto_controller,
     web_controller,
 )
 
@@ -44,6 +45,10 @@ urlpatterns = [
     # 5. Controlador de Dashboard / Panel Organizador
     path('api/organizador/dashboard/', evento_controller.api_organizador_dashboard, name='api_organizador_dashboard'),
     path('api/panel-organizador/', evento_controller.api_organizador_dashboard, name='api_panel_organizador'),
+
+    # 6. Controlador de Recintos y Estadios (CRUD y Eliminación)
+    path('api/recintos/', recinto_controller.api_recintos_lista, name='api_recintos_lista'),
+    path('api/recintos/<int:pk>/', recinto_controller.api_recinto_detalle, name='api_recinto_detalle'),
 
     # ======================================================
     # Rutas Web Tradicionales (Controlador Web MVC)

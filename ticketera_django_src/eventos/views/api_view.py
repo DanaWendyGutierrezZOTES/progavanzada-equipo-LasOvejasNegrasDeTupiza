@@ -1,7 +1,7 @@
 """
 [CAPA VISTA - MVC]
 Vistas de Respuesta REST/JSON: Se encargan exclusivamente de la capa de presentación
-y construcción de respuestas HTTP JSON para el Frontend React y clientes API.
+y construcción de respuestas HTTP JSON para el Frontend React y clientes API (Postman).
 """
 
 from rest_framework import status
@@ -11,6 +11,7 @@ from .serializers_view import (
     EventoSerializer,
     TipoTicketSerializer,
     CompraSerializer,
+    RecintoSerializer,
 )
 
 
@@ -74,10 +75,6 @@ class EventoApiView:
         }, status=status.HTTP_200_OK)
 
     @staticmethod
-    def error(mensaje, http_status=status.HTTP_400_BAD_REQUEST):
-        return Response({'error': mensaje}, status=http_status)
-
-    @staticmethod
     def dashboard_organizador(metricas):
         return Response({
             'total_eventos': metricas['total_eventos'],
@@ -85,6 +82,10 @@ class EventoApiView:
             'total_recaudacion': metricas['total_recaudacion'],
             'eventos': EventoSerializer(metricas['eventos_qs'], many=True).data
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def error(mensaje, http_status=status.HTTP_400_BAD_REQUEST):
+        return Response({'error': mensaje}, status=http_status)
 
 
 class TicketApiView:
@@ -126,6 +127,31 @@ class CompraApiView:
         return Response({
             'resumen': datos_historial['resumen'],
             'ventas': CompraSerializer(datos_historial['ventas_qs'], many=True).data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def error(mensaje, http_status=status.HTTP_400_BAD_REQUEST):
+        return Response({'error': mensaje}, status=http_status)
+
+
+class RecintoApiView:
+    """Vista encargada de formatear las respuestas JSON de recintos y estadios."""
+
+    @staticmethod
+    def lista_recintos(recintos):
+        serializer = RecintoSerializer(recintos, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def detalle_recinto(recinto, creado=False):
+        http_status = status.HTTP_201_CREATED if creado else status.HTTP_200_OK
+        return Response(RecintoSerializer(recinto).data, status=http_status)
+
+    @staticmethod
+    def recinto_eliminado(nombre, pk):
+        return Response({
+            'mensaje': f"Recinto '{nombre}' eliminado exitosamente.",
+            'id_eliminado': pk
         }, status=status.HTTP_200_OK)
 
     @staticmethod

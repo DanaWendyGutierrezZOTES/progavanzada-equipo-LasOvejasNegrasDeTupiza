@@ -13,11 +13,13 @@ from .usuario_model import PerfilUsuario, create_or_update_user_profile
 from .evento_model import Evento
 from .ticket_model import TipoTicket
 from .compra_model import Compra
+from .recinto_model import Recinto
 
 __all__ = [
     'PerfilUsuario',
     'Evento',
     'TipoTicket',
     'Compra',
+    'Recinto',
     'create_or_update_user_profile',
 ]

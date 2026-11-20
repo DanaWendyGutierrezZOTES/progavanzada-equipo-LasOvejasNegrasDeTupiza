@@ -1,5 +1,13 @@
 from django.contrib import admin
-from .models import PerfilUsuario, Evento, TipoTicket, Compra
+from .models import PerfilUsuario, Evento, TipoTicket, Compra, Recinto
+
+
+@admin.register(Recinto)
+class RecintoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nombre', 'ciudad', 'departamento', 'tipo', 'capacidad')
+    list_filter = ('ciudad', 'tipo', 'departamento')
+    search_fields = ('nombre', 'ciudad', 'lugar')
+
 
 
 @admin.register(PerfilUsuario)

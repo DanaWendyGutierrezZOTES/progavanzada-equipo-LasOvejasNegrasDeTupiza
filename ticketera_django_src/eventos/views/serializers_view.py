@@ -6,7 +6,16 @@ en estructuras JSON estandarizadas para el Frontend React y clientes REST (Postm
 
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from ..models import PerfilUsuario, Evento, TipoTicket, Compra
+from ..models import PerfilUsuario, Evento, TipoTicket, Compra, Recinto
+
+
+class RecintoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recinto
+        fields = [
+            'id', 'nombre', 'tipo', 'ciudad', 'departamento',
+            'lugar', 'capacidad', 'lat', 'lng', 'descripcion', 'creado_en'
+        ]
 
 
 class PerfilUsuarioSerializer(serializers.ModelSerializer):

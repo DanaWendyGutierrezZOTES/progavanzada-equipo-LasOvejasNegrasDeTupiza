@@ -34,6 +34,10 @@ from .compra_controller import (
     api_compra_detalle,
     api_historial_ventas,
 )
+from .recinto_controller import (
+    api_recintos_lista,
+    api_recinto_detalle,
+)
 from .web_controller import (
     lista_eventos,
     detalle_evento,
@@ -67,6 +71,8 @@ __all__ = [
     'api_compras_lista',
     'api_compra_detalle',
     'api_historial_ventas',
+    'api_recintos_lista',
+    'api_recinto_detalle',
     'lista_eventos',
     'detalle_evento',
     'crear_evento',

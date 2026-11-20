@@ -14,12 +14,14 @@ from .serializers_view import (
     TipoTicketSerializer,
     EventoSerializer,
     CompraSerializer,
+    RecintoSerializer,
 )
 from .api_view import (
     AuthApiView,
     EventoApiView,
     TicketApiView,
     CompraApiView,
+    RecintoApiView,
 )
 from .web_view import WebTemplateView
 
@@ -29,9 +31,11 @@ __all__ = [
     'TipoTicketSerializer',
     'EventoSerializer',
     'CompraSerializer',
+    'RecintoSerializer',
     'AuthApiView',
     'EventoApiView',
     'TicketApiView',
     'CompraApiView',
+    'RecintoApiView',
     'WebTemplateView',
 ]
