@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { obtenerEventos } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import EventCard from '../components/EventCard';
+import EventCarousel from '../components/EventCarousel';
 import EmptyState from '../components/common/EmptyState';
 import { ESTADIOS_BOLIVIA, DEPARTAMENTOS_BOLIVIA, CIUDADES_BOLIVIA } from '../data/estadios';
 
@@ -190,6 +191,26 @@ export default function EventosPage() {
           </div>
         </div>
       </div>
+
+      {/* ========================================================
+          CARRUSEL INTERACTIVO DE CONCIERTOS DESTACADOS
+         ======================================================== */}
+      {vistaModo === 'grid' && (
+        <div className="mb-5 animate-fadeIn">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <div className="d-flex align-items-center gap-2">
+              <span className="badge rounded-pill px-3 py-1 text-info" style={{ background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.35)' }}>
+                <i className="bi bi-stars me-1 text-warning"></i> Cartelera Estelar 2026
+              </span>
+              <h4 className="fw-extrabold text-white mb-0 font-display">Gira Nacional & Festivales</h4>
+            </div>
+            <span className="text-muted small d-none d-sm-inline">
+              <i className="bi bi-sliders me-1"></i> Carrusel interactivo automático
+            </span>
+          </div>
+          <EventCarousel eventos={eventos} />
+        </div>
+      )}
 
       {/* ========================================================
           VISTA 1: EXPLORADOR NACIONAL DE RECINTOS EN GOOGLE MAPS

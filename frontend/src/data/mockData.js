@@ -37,6 +37,7 @@ export const USUARIOS_INICIALES = [
 export const EVENTOS_INICIALES = [
   {
     id: 1,
+    destacado: true,
     nombre: 'Rock Stadium Fest 2026',
     subtitulo: 'El festival de rock más potente y esperado del continente',
     categoria: 'Rock',
@@ -75,6 +76,7 @@ export const EVENTOS_INICIALES = [
   },
   {
     id: 2,
+    destacado: true,
     nombre: 'Santa Cruz Electronic Festival 2026',
     subtitulo: 'La fiesta electrónica más grande del oriente boliviano',
     categoria: 'Electrónica',
@@ -178,6 +180,7 @@ export const EVENTOS_INICIALES = [
   },
   {
     id: 5,
+    destacado: true,
     nombre: 'Festival Internacional de la Vendimia y Folclore de Tupiza 2026',
     subtitulo: '¡Orgullo de los valles del sur y la tierra de Los Chichas!',
     categoria: 'Festivales',
@@ -447,6 +450,275 @@ export const EVENTOS_INICIALES = [
       { id: 1202, nombre: 'Cancha Rave Césped', sector: 'Césped', puerta: 'Puerta 2', precio: 170, cantidad_total: 2500, cantidad_disponible: 2470, color_zona: '#6366f1' },
       { id: 1203, nombre: 'VIP Altura 4088', sector: 'Front Stage', puerta: 'Puerta 1', precio: 300, cantidad_total: 500, cantidad_disponible: 485, color_zona: '#f59e0b' }
     ]
+  },
+  {
+    id: 13,
+    nombre: 'Clásico Paceño: Bolívar vs The Strongest - Concierto & Fiesta del Deporte',
+    subtitulo: 'La gran fiesta del fútbol boliviano con bandas en vivo en el Siles',
+    categoria: 'Festivales',
+    ciudad: 'La Paz',
+    departamento: 'La Paz',
+    tipo_recinto: 'estadio',
+    descripcion: 'El superclásico paceño se viste de gala con show musical previo y posterior. Dos gigantes del fútbol nacional frente a frente, pantallas gigantes y presentaciones de rock y cumbia en vivo para toda la hinchada.',
+    fecha: '2026-11-21',
+    hora: '15:30',
+    lugar: 'Estadio Hernando Siles, La Paz',
+    ubicacion_mapa: 'Estadio Hernando Siles, La Paz, Bolivia',
+    estadio_nombre: 'Estadio Olímpico Hernando Siles',
+    capacidad_estadio: '41.143 espectadores',
+    lat: -16.4994,
+    lng: -68.1225,
+    imagen_url: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80',
+    precio_base: 60,
+    cupo_total: 10000,
+    organizador_id: 1,
+    organizador_nombre: 'Carlos Mendoza',
+    sectores_geograficos: [
+      { id: 'vip', nombre: 'Palco Oficial & VIP', ubicacion_estadio: 'Palco Occidental', puerta: 'Puerta 4 - Av. Saavedra', color: '#f59e0b', precio: 250, capacidad: 400, disponibles: 390 },
+      { id: 'preferencial', nombre: 'Preferencia Siles', ubicacion_estadio: 'Occidente Techado', puerta: 'Puerta 5 - Av. Saavedra', color: '#38bdf8', precio: 140, capacidad: 2500, disponibles: 2460 },
+      { id: 'general', nombre: 'General Recta Oriente', ubicacion_estadio: 'Gradería Este', puerta: 'Puerta 7 - Calle Sanjinés', color: '#10b981', precio: 90, capacidad: 3500, disponibles: 3450 },
+      { id: 'curvas', nombre: 'Curva Norte / Curva Sur', ubicacion_estadio: 'Cabeceras Hinchadas', puerta: 'Puertas 9 y 12', color: '#ec4899', precio: 60, capacidad: 3600, disponibles: 3520 }
+    ],
+    tipos_ticket: [
+      { id: 1301, nombre: 'Curvas Populares', sector: 'Cabeceras', puerta: 'Puertas 9 y 12', precio: 60, cantidad_total: 3600, cantidad_disponible: 3520, color_zona: '#ec4899' },
+      { id: 1302, nombre: 'General Recta Oriente', sector: 'Tribuna Este', puerta: 'Puerta 7', precio: 90, cantidad_total: 3500, cantidad_disponible: 3450, color_zona: '#10b981' },
+      { id: 1303, nombre: 'Preferencia Siles', sector: 'Occidente', puerta: 'Puerta 5', precio: 140, cantidad_total: 2500, cantidad_disponible: 2460, color_zona: '#38bdf8' },
+      { id: 1304, nombre: 'Palco Oficial & VIP', sector: 'Palcos', puerta: 'Puerta 4', precio: 250, cantidad_total: 400, cantidad_disponible: 390, color_zona: '#f59e0b' }
+    ]
+  },
+  {
+    id: 14,
+    nombre: 'Festival Nacional del Charango & Peñas de Aiquile',
+    subtitulo: 'Cuna internacional del charango en el histórico Teatro Achá',
+    categoria: 'Festivales',
+    ciudad: 'Cochabamba',
+    departamento: 'Cochabamba',
+    tipo_recinto: 'teatro',
+    descripcion: 'Homenaje a los grandes maestros luthiers e intérpretes del charango boliviano. Una noche de cuerdas mágicas, huayños, kaluyos y ritmos tradicionales en la sala colonial del Teatro Achá de Cochabamba.',
+    fecha: '2026-12-08',
+    hora: '19:00',
+    lugar: 'Teatro José María Achá, Cochabamba',
+    ubicacion_mapa: 'Teatro Jose Maria Acha, Cochabamba, Bolivia',
+    estadio_nombre: 'Teatro José María Achá',
+    capacidad_estadio: '800 espectadores',
+    lat: -17.3939,
+    lng: -66.1569,
+    imagen_url: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&w=1200&q=80',
+    precio_base: 70,
+    cupo_total: 600,
+    organizador_id: 1,
+    organizador_nombre: 'Carlos Mendoza',
+    sectores_geograficos: [
+      { id: 'platea_vip', nombre: 'Platea Baja de Honor', ubicacion_estadio: 'Filas 1 a 12', puerta: 'Puerta Central Calle España', color: '#f59e0b', precio: 140, capacidad: 200, disponibles: 195 },
+      { id: 'palcos', nombre: 'Palcos Coloniales', ubicacion_estadio: 'Nivel Intermedio', puerta: 'Escalinata Derecha', color: '#38bdf8', precio: 110, capacidad: 150, disponibles: 145 },
+      { id: 'anfiteatro', nombre: 'Galería Alta Acústica', ubicacion_estadio: 'Nivel Superior', puerta: 'Escalinata Izquierda', color: '#10b981', precio: 70, capacidad: 250, disponibles: 240 }
+    ],
+    tipos_ticket: [
+      { id: 1401, nombre: 'Galería Alta', sector: 'Nivel Superior', puerta: 'Escalinata Izquierda', precio: 70, cantidad_total: 250, cantidad_disponible: 240, color_zona: '#10b981' },
+      { id: 1402, nombre: 'Palcos Coloniales', sector: 'Nivel Intermedio', puerta: 'Escalinata Derecha', precio: 110, cantidad_total: 150, cantidad_disponible: 145, color_zona: '#38bdf8' },
+      { id: 1403, nombre: 'Platea Baja de Honor', sector: 'Frente al Escenario', puerta: 'Puerta Central', precio: 140, cantidad_total: 200, cantidad_disponible: 195, color_zona: '#f59e0b' }
+    ]
+  },
+  {
+    id: 15,
+    destacado: true,
+    nombre: 'Gran Poder Fest 2026: Morenada, Caporales & Diablada en Vivo',
+    subtitulo: 'La máxima expresión del folclore paceño en Chuquiago Marka',
+    categoria: 'Festivales',
+    ciudad: 'La Paz',
+    departamento: 'La Paz',
+    tipo_recinto: 'arena',
+    descripcion: 'Las fraternidades campeonas de la Fiesta Mayor de los Andes se reúnen en un espectáculo inmersivo con trajes pesados bordados en oro y plata, bandas monumentales y tecnología de audio 360 grados.',
+    fecha: '2026-11-27',
+    hora: '17:00',
+    lugar: 'Campo Ferial Chuquiago Marka, Bajo Següencoma, La Paz',
+    ubicacion_mapa: 'Campo Ferial Chuquiago Marka, La Paz, Bolivia',
+    estadio_nombre: 'Campo Ferial Chuquiago Marka',
+    capacidad_estadio: '10.000 espectadores',
+    lat: -16.5361,
+    lng: -68.1028,
+    imagen_url: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=80',
+    precio_base: 80,
+    cupo_total: 5000,
+    organizador_id: 1,
+    organizador_nombre: 'Carlos Mendoza',
+    sectores_geograficos: [
+      { id: 'vip', nombre: 'VIP Gran Poder Oro', ubicacion_estadio: 'Front Stage Pabellón Rojo', puerta: 'Puerta 1 - Costanera', color: '#f59e0b', precio: 220, capacidad: 600, disponibles: 580 },
+      { id: 'cancha', nombre: 'Pista Central de Danza', ubicacion_estadio: 'Pista Principal', puerta: 'Puerta 2 - Següencoma', color: '#6366f1', precio: 130, capacidad: 2400, disponibles: 2360 },
+      { id: 'general', nombre: 'Graderías Chuquiago', ubicacion_estadio: 'Pabellones Amarillo y Verde', puerta: 'Puerta 3 - Rampa', color: '#10b981', precio: 80, capacidad: 2000, disponibles: 1960 }
+    ],
+    tipos_ticket: [
+      { id: 1501, nombre: 'Graderías Chuquiago', sector: 'Pabellón', puerta: 'Puerta 3', precio: 80, cantidad_total: 2000, cantidad_disponible: 1960, color_zona: '#10b981' },
+      { id: 1502, nombre: 'Pista Central de Danza', sector: 'Pista', puerta: 'Puerta 2', precio: 130, cantidad_total: 2400, cantidad_disponible: 2360, color_zona: '#6366f1' },
+      { id: 1503, nombre: 'VIP Gran Poder Oro', sector: 'Front Stage', puerta: 'Puerta 1', precio: 220, cantidad_total: 600, cantidad_disponible: 580, color_zona: '#f59e0b' }
+    ]
+  },
+  {
+    id: 16,
+    nombre: 'Tarija Canta al Amor: Noche Chapaca de Enamorados',
+    subtitulo: 'Coplas, violines y baladas en el coloso del Guadalquivir',
+    categoria: 'Festivales',
+    ciudad: 'Tarija',
+    departamento: 'Tarija',
+    tipo_recinto: 'estadio',
+    descripcion: 'Las mejores voces del folclore romántico y grupos de zapateo en una noche mágica bajo el cielo andaluz. Despliegue de vinos de altura, quesos y flores tarijeñas en el Estadio IV Centenario.',
+    fecha: '2026-12-14',
+    hora: '19:30',
+    lugar: 'Estadio IV Centenario, Tarija',
+    ubicacion_mapa: 'Estadio IV Centenario, Tarija, Bolivia',
+    estadio_nombre: 'Estadio IV Centenario (Tarija)',
+    capacidad_estadio: '20.000 espectadores',
+    lat: -21.5306,
+    lng: -64.7297,
+    imagen_url: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1200&q=80',
+    precio_base: 70,
+    cupo_total: 6000,
+    organizador_id: 1,
+    organizador_nombre: 'Carlos Mendoza',
+    sectores_geograficos: [
+      { id: 'vip', nombre: 'VIP Guadalquivir', ubicacion_estadio: 'Frente al Escenario', puerta: 'Puerta 1 - Av. Potosí', color: '#f59e0b', precio: 200, capacidad: 600, disponibles: 590 },
+      { id: 'cancha', nombre: 'Cancha Central Fiesta', ubicacion_estadio: 'Césped Central', puerta: 'Puerta 2 - Rampa', color: '#6366f1', precio: 120, capacidad: 3000, disponibles: 2950 },
+      { id: 'preferencial', nombre: 'Tribuna Preferencial', ubicacion_estadio: 'Occidente Techado', puerta: 'Puerta 3', color: '#38bdf8', precio: 100, capacidad: 1000, disponibles: 980 },
+      { id: 'general', nombre: 'General y Curvas', ubicacion_estadio: 'Graderías Este y Sur', puerta: 'Puertas 4 y 5', color: '#10b981', precio: 70, capacidad: 1400, disponibles: 1380 }
+    ],
+    tipos_ticket: [
+      { id: 1601, nombre: 'General y Curvas', sector: 'Graderías', puerta: 'Puertas 4 y 5', precio: 70, cantidad_total: 1400, cantidad_disponible: 1380, color_zona: '#10b981' },
+      { id: 1602, nombre: 'Tribuna Preferencial', sector: 'Occidente', puerta: 'Puerta 3', precio: 100, cantidad_total: 1000, cantidad_disponible: 980, color_zona: '#38bdf8' },
+      { id: 1603, nombre: 'Cancha Central Fiesta', sector: 'Césped', puerta: 'Puerta 2', precio: 120, cantidad_total: 3000, cantidad_disponible: 2950, color_zona: '#6366f1' },
+      { id: 1604, nombre: 'VIP Guadalquivir', sector: 'Front Stage', puerta: 'Puerta 1', precio: 200, cantidad_total: 600, cantidad_disponible: 590, color_zona: '#f59e0b' }
+    ]
+  },
+  {
+    id: 17,
+    nombre: 'Montero Tropical Fest: Cumbia & Salsa del Oriente',
+    subtitulo: '¡La fiesta más caliente del norte cruceño en La Caldera del Diablo!',
+    categoria: 'Festivales',
+    ciudad: 'Montero',
+    departamento: 'Santa Cruz',
+    tipo_recinto: 'estadio',
+    descripcion: 'Las mejores orquestas de cumbia, salsa y merengue encendiendo la noche en el Estadio Gilberto Parada de Montero. Sonido de alta potencia, barras de cócteles tropicales y baile hasta el amanecer.',
+    fecha: '2026-11-29',
+    hora: '18:00',
+    lugar: 'Estadio Gilberto Parada, Montero, Santa Cruz',
+    ubicacion_mapa: 'Estadio Gilberto Parada, Montero, Bolivia',
+    estadio_nombre: 'Estadio Gilberto Parada "La Caldera del Diablo"',
+    capacidad_estadio: '18.000 espectadores',
+    lat: -17.3411,
+    lng: -63.2558,
+    imagen_url: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=1200&q=80',
+    precio_base: 80,
+    cupo_total: 5000,
+    organizador_id: 1,
+    organizador_nombre: 'Carlos Mendoza',
+    sectores_geograficos: [
+      { id: 'vip', nombre: 'VIP Caldera Caliente', ubicacion_estadio: 'Frente al Escenario', puerta: 'Puerta 1 - Calle Warnes', color: '#f59e0b', precio: 190, capacidad: 500, disponibles: 485 },
+      { id: 'cancha', nombre: 'Cancha Tropical', ubicacion_estadio: 'Césped', puerta: 'Puerta 2 - Av. Circunvalación', color: '#6366f1', precio: 110, capacidad: 2500, disponibles: 2450 },
+      { id: 'general', nombre: 'Graderías Generales', ubicacion_estadio: 'Graderías Perimetrales', puerta: 'Puertas 3 y 4', color: '#10b981', precio: 80, capacidad: 2000, disponibles: 1965 }
+    ],
+    tipos_ticket: [
+      { id: 1701, nombre: 'Graderías Generales', sector: 'Graderías', puerta: 'Puertas 3 y 4', precio: 80, cantidad_total: 2000, cantidad_disponible: 1965, color_zona: '#10b981' },
+      { id: 1702, nombre: 'Cancha Tropical', sector: 'Césped', puerta: 'Puerta 2', precio: 110, cantidad_total: 2500, cantidad_disponible: 2450, color_zona: '#6366f1' },
+      { id: 1703, nombre: 'VIP Caldera Caliente', sector: 'Front Stage', puerta: 'Puerta 1', precio: 190, cantidad_total: 500, cantidad_disponible: 485, color_zona: '#f59e0b' }
+    ]
+  },
+  {
+    id: 18,
+    nombre: 'Festival Internacional de Música Barroca Chiquitana',
+    subtitulo: 'Patrimonio Sonoro de la Humanidad en Sonilum Boulevard',
+    categoria: 'Festivales',
+    ciudad: 'Santa Cruz',
+    departamento: 'Santa Cruz',
+    tipo_recinto: 'arena',
+    descripcion: 'Coros y ensambles barrocos de Europa y las Misiones Jesuíticas de la Chiquitania interpretando manuscritos sagrados de los siglos XVII y XVIII. Una experiencia auditiva y espiritual inigualable en un domo acústico de vanguardia.',
+    fecha: '2026-12-16',
+    hora: '19:00',
+    lugar: 'Arena Sonilum Boulevard, 4to Anillo, Santa Cruz',
+    ubicacion_mapa: 'Arena Sonilum Boulevard, Santa Cruz, Bolivia',
+    estadio_nombre: 'Arena Sonilum Boulevard',
+    capacidad_estadio: '12.000 espectadores',
+    lat: -17.7656,
+    lng: -63.1994,
+    imagen_url: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&w=1200&q=80',
+    precio_base: 90,
+    cupo_total: 3500,
+    organizador_id: 1,
+    organizador_nombre: 'Carlos Mendoza',
+    sectores_geograficos: [
+      { id: 'golden_circle', nombre: 'VIP Misiones Chiquitanas', ubicacion_estadio: 'Filas Preferenciales Frontales', puerta: 'Acceso Boulevard 4to Anillo', color: '#f59e0b', precio: 240, capacidad: 400, disponibles: 390 },
+      { id: 'pista_central', nombre: 'Platea Central Acústica', ubicacion_estadio: 'Pista Central con Asientos', puerta: 'Puerta Principal Este', color: '#6366f1', precio: 150, capacidad: 1800, disponibles: 1770 },
+      { id: 'general_arena', nombre: 'Galería Panorámica', ubicacion_estadio: 'Nivel Elevado', puerta: 'Puerta Oeste', color: '#10b981', precio: 90, capacidad: 1300, disponibles: 1280 }
+    ],
+    tipos_ticket: [
+      { id: 1801, nombre: 'Galería Panorámica', sector: 'Nivel Elevado', puerta: 'Puerta Oeste', precio: 90, cantidad_total: 1300, cantidad_disponible: 1280, color_zona: '#10b981' },
+      { id: 1802, nombre: 'Platea Central Acústica', sector: 'Pista Central', puerta: 'Puerta Principal', precio: 150, cantidad_total: 1800, cantidad_disponible: 1770, color_zona: '#6366f1' },
+      { id: 1803, nombre: 'VIP Misiones Chiquitanas', sector: 'Frontal', puerta: 'Acceso Boulevard', precio: 240, cantidad_total: 400, cantidad_disponible: 390, color_zona: '#f59e0b' }
+    ]
+  },
+  {
+    id: 19,
+    nombre: 'Trinidad Canta al Beni: Fiesta Mojeña & Guabirá',
+    subtitulo: 'Orgullo de la Amazonía en el Estadio Gran Mamoré',
+    categoria: 'Festivales',
+    ciudad: 'Trinidad',
+    departamento: 'Beni',
+    tipo_recinto: 'estadio',
+    descripcion: 'Homenaje a la tierra beniana y sus danzas ancestrales (macheteros, chovena, taquirari) fusionadas con agrupaciones contemporáneas de cumbia amazónica. Muestra artesanal y gastronómica mojeña.',
+    fecha: '2026-11-23',
+    hora: '17:30',
+    lugar: 'Estadio Gran Mamoré, Trinidad, Beni',
+    ubicacion_mapa: 'Estadio Gran Mamore, Trinidad, Bolivia',
+    estadio_nombre: 'Estadio Gran Mamoré (Trinidad, Beni)',
+    capacidad_estadio: '15.000 espectadores',
+    lat: -14.8319,
+    lng: -64.9125,
+    imagen_url: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
+    precio_base: 60,
+    cupo_total: 4500,
+    organizador_id: 1,
+    organizador_nombre: 'Carlos Mendoza',
+    sectores_geograficos: [
+      { id: 'vip', nombre: 'VIP Gran Mojos', ubicacion_estadio: 'Frente al Gran Escenario', puerta: 'Puerta 1 - Av. Japón', color: '#f59e0b', precio: 170, capacidad: 400, disponibles: 390 },
+      { id: 'cancha', nombre: 'Cancha Chovena & Césped', ubicacion_estadio: 'Césped Central', puerta: 'Puerta 2 - Rampa Central', color: '#6366f1', precio: 100, capacidad: 2200, disponibles: 2160 },
+      { id: 'general', nombre: 'Graderías Gran Mamoré', ubicacion_estadio: 'Graderías Generales', puerta: 'Puertas 3 y 4', color: '#10b981', precio: 60, capacidad: 1900, disponibles: 1870 }
+    ],
+    tipos_ticket: [
+      { id: 1901, nombre: 'Graderías Gran Mamoré', sector: 'Graderías', puerta: 'Puertas 3 y 4', precio: 60, cantidad_total: 1900, cantidad_disponible: 1870, color_zona: '#10b981' },
+      { id: 1902, nombre: 'Cancha Chovena & Césped', sector: 'Césped', puerta: 'Puerta 2', precio: 100, cantidad_total: 2200, cantidad_disponible: 2160, color_zona: '#6366f1' },
+      { id: 1903, nombre: 'VIP Gran Mojos', sector: 'Front Stage', puerta: 'Puerta 1', precio: 170, cantidad_total: 400, cantidad_disponible: 390, color_zona: '#f59e0b' }
+    ]
+  },
+  {
+    id: 20,
+    nombre: 'Amazonía Rock & Reggae Festival Cobija 2026',
+    subtitulo: 'Sonidos de la selva y el Acre en el Estadio Roberto Jordán',
+    categoria: 'Rock',
+    ciudad: 'Cobija',
+    departamento: 'Pando',
+    tipo_recinto: 'estadio',
+    descripcion: 'El festival más septentrional de Bolivia congregando a bandas de rock, roots reggae y ska de Bolivia, Brasil y Perú. Un mensaje ecológico por la preservación de la selva amazónica y sus recursos naturales.',
+    fecha: '2026-12-19',
+    hora: '17:00',
+    lugar: 'Estadio Roberto Jordán Cuéllar, Cobija, Pando',
+    ubicacion_mapa: 'Estadio Roberto Jordan Cuellar, Cobija, Bolivia',
+    estadio_nombre: 'Estadio Roberto Jordán Cuéllar (Cobija, Pando)',
+    capacidad_estadio: '24.000 espectadores',
+    lat: -11.0264,
+    lng: -68.7619,
+    imagen_url: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
+    precio_base: 60,
+    cupo_total: 4000,
+    organizador_id: 1,
+    organizador_nombre: 'Carlos Mendoza',
+    sectores_geograficos: [
+      { id: 'vip', nombre: 'VIP Selva Verde', ubicacion_estadio: 'Front Stage Escenario', puerta: 'Puerta 1 - Av. 9 de Febrero', color: '#f59e0b', precio: 160, capacidad: 400, disponibles: 390 },
+      { id: 'cancha', nombre: 'Cancha Pando Libre', ubicacion_estadio: 'Césped Central', puerta: 'Puerta 2 - Acceso Norte', color: '#6366f1', precio: 90, capacidad: 2000, disponibles: 1960 },
+      { id: 'general', nombre: 'Graderías Perla del Acre', ubicacion_estadio: 'Graderías Techadas', puerta: 'Puertas 3 y 4', color: '#10b981', precio: 60, capacidad: 1600, disponibles: 1570 }
+    ],
+    tipos_ticket: [
+      { id: 2001, nombre: 'Graderías Perla del Acre', sector: 'Graderías', puerta: 'Puertas 3 y 4', precio: 60, cantidad_total: 1600, cantidad_disponible: 1570, color_zona: '#10b981' },
+      { id: 2002, nombre: 'Cancha Pando Libre', sector: 'Césped', puerta: 'Puerta 2', precio: 90, cantidad_total: 2000, cantidad_disponible: 1960, color_zona: '#6366f1' },
+      { id: 2003, nombre: 'VIP Selva Verde', sector: 'Front Stage', puerta: 'Puerta 1', precio: 160, cantidad_total: 400, cantidad_disponible: 390, color_zona: '#f59e0b' }
+    ]
   }
 ];
 
@@ -492,5 +764,47 @@ export const COMPRAS_INICIALES = [
     total: 220,
     fecha_compra: '2026-10-12T11:15:00Z',
     qr_url: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TKT-7K2M9X4P'
+  },
+  {
+    id: 3,
+    codigo_ticket: 'TKT-3B8X5L2Q',
+    usuario_id: 2,
+    usuario_nombre: 'Valeria Rojas',
+    comprador_nombre: 'Valeria Rojas',
+    comprador_email: 'comprador@ticketera.local',
+    comprador_telefono: '+591 79876543',
+    evento_id: 2,
+    evento_nombre: 'Santa Cruz Electronic Festival 2026',
+    evento_fecha: '2026-11-28',
+    evento_hora: '17:00',
+    evento_lugar: 'Estadio Ramón Tahuichi Aguilera, Santa Cruz',
+    tipo_ticket_id: 202,
+    tipo_ticket_nombre: 'Pista Electrónica (Césped)',
+    cantidad: 2,
+    precio_unitario: 200,
+    total: 400,
+    fecha_compra: '2026-10-20T16:45:00Z',
+    qr_url: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TKT-3B8X5L2Q'
+  },
+  {
+    id: 4,
+    codigo_ticket: 'TKT-8M4N1V9R',
+    usuario_id: 2,
+    usuario_nombre: 'Valeria Rojas',
+    comprador_nombre: 'Valeria Rojas',
+    comprador_email: 'comprador@ticketera.local',
+    comprador_telefono: '+591 79876543',
+    evento_id: 15,
+    evento_nombre: 'Gran Poder Fest 2026: Morenada, Caporales & Diablada en Vivo',
+    evento_fecha: '2026-11-27',
+    evento_hora: '17:00',
+    evento_lugar: 'Campo Ferial Chuquiago Marka, Bajo Següencoma, La Paz',
+    tipo_ticket_id: 1503,
+    tipo_ticket_nombre: 'VIP Gran Poder Oro',
+    cantidad: 1,
+    precio_unitario: 220,
+    total: 220,
+    fecha_compra: '2026-11-01T09:20:00Z',
+    qr_url: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TKT-8M4N1V9R'
   }
 ];

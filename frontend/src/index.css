@@ -5,6 +5,10 @@
 ======================================================== */
 
 :root {
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-numbers: 'Space Grotesk', monospace;
+
   --bg-dark: #090d16;
   --bg-surface: #111827;
   --bg-surface-elevated: #1e293b;
@@ -34,7 +38,7 @@
 
 /* Reset y Base */
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-body);
   background-color: var(--bg-dark);
   color: var(--text-main);
   min-height: 100vh;
@@ -44,6 +48,15 @@ body {
     radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
     radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.08) 0px, transparent 50%);
   background-attachment: fixed;
+}
+
+h1, h2, h3, h4, .font-display, .display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.font-numbers {
+  font-family: var(--font-numbers);
 }
 
 #root {
@@ -443,6 +456,8 @@ body {
 }
 
 
+/* ========================================================
+   ESTILOS DE IMPRESIÓN OFICIAL DEL TICKET DIGITAL (A4)
    Optimizado para impresoras (Epson, HP, etc.) y Guardar como PDF
 ======================================================== */
 @media print {
@@ -627,6 +642,49 @@ dialog::backdrop {
 .recintos-scroll-list::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 3px;
+}
+
+/* --------------------------------------------------------
+   CARRUSEL DE EVENTOS DESTACADOS
+-------------------------------------------------------- */
+.carousel-container {
+  transition: all 0.3s ease;
+}
+.carousel-container:hover {
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  box-shadow: 0 25px 60px -15px rgba(99, 102, 241, 0.25) !important;
+}
+
+/* --------------------------------------------------------
+   VALIDACIONES VISUALES & FORMULARIOS
+-------------------------------------------------------- */
+.form-control-modern.is-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+.form-control-modern.is-valid {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Métodos de Pago Interactivos */
+.payment-option-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.payment-option-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+.payment-option-card.selected {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.15);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.25);
 }
 
 

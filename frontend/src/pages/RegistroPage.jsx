@@ -1,6 +1,7 @@
 // ========================================================
 // PÁGINA: REGISTROPAGE (Registro Público de Comprador)
 // Registro público seguro exclusivo para asistentes y compradores
+// con validaciones centralizadas y componentes modulares (DRY).
 // ========================================================
 
 import React, { useState } from 'react';
@@ -8,6 +9,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import AlertBanner from '../components/common/AlertBanner';
+import FormInput from '../components/common/FormInput';
+import {
+  validarUsername,
+  validarNombre,
+  validarEmail,
+  validarTelefono,
+  validarPassword
+} from '../utils/validators';
 
 export default function RegistroPage() {
   const [formData, setFormData] = useState({
@@ -19,7 +28,8 @@ export default function RegistroPage() {
     confirmPassword: ''
   });
 
-  const [error, setError] = useState('');
+  const [errores, setErrores] = useState({});
+  const [errorGlobal, setErrorGlobal] = useState('');
   const [procesando, setProcesando] = useState(false);
 
   const { registro } = useAuth();
@@ -29,19 +39,35 @@ export default function RegistroPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (errores[name]) {
+      setErrores(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setErrorGlobal('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Las contraseñas ingresadas no coinciden.');
-      return;
-    }
+    // Validaciones con validators.js
+    const vUser = validarUsername(formData.username);
+    const vNombre = validarNombre(formData.nombre, 'El nombre completo');
+    const vEmail = validarEmail(formData.email);
+    const vTel = validarTelefono(formData.telefono, false);
+    const vPass = validarPassword(formData.password, formData.confirmPassword);
 
-    if (formData.password.length < 3) {
-      setError('La contraseña debe tener al menos 3 caracteres.');
+    const nuevosErrores = {
+      username: vUser.valido ? '' : vUser.mensaje,
+      nombre: vNombre.valido ? '' : vNombre.mensaje,
+      email: vEmail.valido ? '' : vEmail.mensaje,
+      telefono: vTel.valido ? '' : vTel.mensaje,
+      password: vPass.valido ? '' : vPass.mensaje,
+      confirmPassword: (formData.password !== formData.confirmPassword) ? 'Las contraseñas no coinciden.' : ''
+    };
+
+    setErrores(nuevosErrores);
+
+    if (Object.values(nuevosErrores).some(m => Boolean(m))) {
+      setErrorGlobal('Por favor completa todos los campos requeridos correctamente.');
       return;
     }
 
@@ -49,17 +75,17 @@ export default function RegistroPage() {
 
     try {
       const nuevo = await registro({
-        username: formData.username,
-        nombre: formData.nombre,
-        email: formData.email,
-        telefono: formData.telefono,
+        username: formData.username.trim(),
+        nombre: formData.nombre.trim(),
+        email: formData.email.trim(),
+        telefono: formData.telefono.trim(),
         password: formData.password
       });
 
       notifySuccess(`¡Bienvenido a TicketEventos, ${nuevo.nombre || nuevo.username}! Tu cuenta de comprador ha sido creada.`);
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Error al registrar el usuario');
+      setErrorGlobal(err.message || 'Error al registrar el usuario');
     } finally {
       setProcesando(false);
     }
@@ -75,7 +101,7 @@ export default function RegistroPage() {
                    style={{ width: '60px', height: '60px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%)', color: '#818cf8', border: '1px solid rgba(99, 102, 241, 0.35)' }}>
                 <i className="bi bi-person-plus-fill fs-3"></i>
               </div>
-              <h3 className="fw-extrabold text-white mb-1">Registro de Comprador</h3>
+              <h3 className="fw-extrabold text-white mb-1 font-display">Registro de Comprador</h3>
               <p className="text-muted small">Crea tu cuenta para comprar y gestionar tus entradas oficiales en Bolivia</p>
             </div>
 
@@ -90,84 +116,89 @@ export default function RegistroPage() {
               </div>
             </div>
 
-            <AlertBanner type="danger" message={error} onDismiss={() => setError('')} />
+            <AlertBanner type="danger" message={errorGlobal} onDismiss={() => setErrorGlobal('')} />
 
-            <form onSubmit={handleSubmit}>
-              <div className="row g-3 mb-3">
+            <form onSubmit={handleSubmit} noValidate>
+              <div className="row g-2 mb-2">
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Usuario *</label>
-                  <input
-                    type="text"
-                    required
+                  <FormInput
+                    label="Usuario"
                     name="username"
-                    className="form-control form-control-modern"
-                    placeholder="ej: juan123"
                     value={formData.username}
+                    placeholder="ej: juan123"
+                    required
+                    icon="bi-person"
+                    error={errores.username}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Nombre Completo *</label>
-                  <input
-                    type="text"
-                    required
+                  <FormInput
+                    label="Nombre Completo"
                     name="nombre"
-                    className="form-control form-control-modern"
-                    placeholder="ej: Juan Pérez"
                     value={formData.nombre}
+                    placeholder="ej: Juan Pérez"
+                    required
+                    icon="bi-person-badge"
+                    error={errores.nombre}
                     onChange={handleChange}
                   />
                 </div>
               </div>
 
-              <div className="row g-3 mb-3">
+              <div className="row g-2 mb-2">
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Correo Electrónico *</label>
-                  <input
-                    type="email"
-                    required
+                  <FormInput
+                    label="Correo Electrónico"
                     name="email"
-                    className="form-control form-control-modern"
-                    placeholder="correo@ejemplo.com"
+                    type="email"
                     value={formData.email}
+                    placeholder="correo@ejemplo.com"
+                    required
+                    icon="bi-envelope"
+                    error={errores.email}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Teléfono / WhatsApp</label>
-                  <input
-                    type="text"
+                  <FormInput
+                    label="Teléfono / Celular Bolivia"
                     name="telefono"
-                    className="form-control form-control-modern"
-                    placeholder="+591 71234567"
+                    type="tel"
                     value={formData.telefono}
+                    placeholder="71234567 o +591..."
+                    icon="bi-whatsapp"
+                    helperText="Opcional"
+                    error={errores.telefono}
                     onChange={handleChange}
                   />
                 </div>
               </div>
 
-              <div className="row g-3 mb-4">
+              <div className="row g-2 mb-3">
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Contraseña *</label>
-                  <input
-                    type="password"
-                    required
+                  <FormInput
+                    label="Contraseña"
                     name="password"
-                    className="form-control form-control-modern"
-                    placeholder="••••••••"
+                    type="password"
                     value={formData.password}
+                    placeholder="••••••••"
+                    required
+                    icon="bi-lock"
+                    error={errores.password}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Confirmar Contraseña *</label>
-                  <input
-                    type="password"
-                    required
+                  <FormInput
+                    label="Confirmar Contraseña"
                     name="confirmPassword"
-                    className="form-control form-control-modern"
-                    placeholder="••••••••"
+                    type="password"
                     value={formData.confirmPassword}
+                    placeholder="••••••••"
+                    required
+                    icon="bi-lock-fill"
+                    error={errores.confirmPassword}
                     onChange={handleChange}
                   />
                 </div>
@@ -176,12 +207,17 @@ export default function RegistroPage() {
               <button
                 type="submit"
                 disabled={procesando}
-                className="btn-modern-primary w-100 py-2 fs-6"
+                className="btn-modern-primary w-100 py-2 fs-6 mt-2"
               >
                 {procesando ? (
-                  <span>Registrando Cuenta...</span>
+                  <span>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Registrando Cuenta...
+                  </span>
                 ) : (
-                  <span><i className="bi bi-person-check me-1"></i> Registrar Cuenta de Comprador</span>
+                  <span>
+                    <i className="bi bi-person-check me-1"></i> Registrar Cuenta de Comprador
+                  </span>
                 )}
               </button>
             </form>

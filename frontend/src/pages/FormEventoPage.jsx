@@ -1,7 +1,8 @@
 // ========================================================
 // PÁGINA: FORMEVENTOPAGE (Creación y Edición de Conciertos)
 // Autocompletado inteligente con recintos de toda Bolivia
-// Precios oficiales en Bolivianos (Bs) y geolocalización Google Maps
+// Precios oficiales en Bolivianos (Bs), geolocalización Google Maps
+// y validaciones robustas centralizadas sin código repetido (DRY).
 // ========================================================
 
 import React, { useState, useEffect } from 'react';
@@ -10,7 +11,14 @@ import { obtenerEventoPorId, guardarEvento } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import AlertBanner from '../components/common/AlertBanner';
-import { ESTADIOS_BOLIVIA, DEPARTAMENTOS_BOLIVIA } from '../data/estadios';
+import FormInput from '../components/common/FormInput';
+import { ESTADIOS_BOLIVIA } from '../data/estadios';
+import {
+  validarNombre,
+  validarFechaEvento,
+  validarPrecio,
+  validarCupo
+} from '../utils/validators';
 
 export default function FormEventoPage() {
   const { id } = useParams();
@@ -42,7 +50,8 @@ export default function FormEventoPage() {
     ticket_cupo: 1000
   });
 
-  const [error, setError] = useState('');
+  const [errores, setErrores] = useState({});
+  const [errorGlobal, setErrorGlobal] = useState('');
   const [guardando, setGuardando] = useState(false);
 
   useEffect(() => {
@@ -78,6 +87,9 @@ export default function FormEventoPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (errores[name]) {
+      setErrores(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSelectEstadio = (e) => {
@@ -97,15 +109,33 @@ export default function FormEventoPage() {
         cupo_total: estadio.capacidadNum || prev.cupo_total,
         ticket_cupo: estadio.capacidadNum || prev.ticket_cupo
       }));
+      setErrores(prev => ({ ...prev, lugar: '', ciudad: '' }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setErrorGlobal('');
 
-    if (!formData.nombre.trim() || !formData.fecha || !formData.lugar.trim()) {
-      setError('Por favor completa todos los campos requeridos marcados con (*)');
+    // Validaciones modulares con validators.js
+    const vNombre = validarNombre(formData.nombre, 'El título del evento');
+    const vFecha = validarFechaEvento(formData.fecha, formData.hora, esEdicion);
+    const vPrecio = validarPrecio(formData.precio_base, 10, 20000);
+    const vCupo = validarCupo(formData.cupo_total, 100000);
+
+    const nuevosErrores = {
+      nombre: vNombre.valido ? '' : vNombre.mensaje,
+      fecha: vFecha.valido ? '' : vFecha.mensaje,
+      lugar: formData.lugar?.trim() ? '' : 'El lugar o recinto es obligatorio.',
+      descripcion: formData.descripcion?.trim() ? '' : 'La descripción es obligatoria.',
+      precio_base: vPrecio.valido ? '' : vPrecio.mensaje,
+      cupo_total: vCupo.valido ? '' : vCupo.mensaje
+    };
+
+    setErrores(nuevosErrores);
+
+    if (Object.values(nuevosErrores).some(m => Boolean(m))) {
+      setErrorGlobal('Por favor completa todos los campos requeridos correctamente.');
       return;
     }
 
@@ -113,13 +143,13 @@ export default function FormEventoPage() {
 
     try {
       const datosAEnviar = {
-        nombre: formData.nombre,
-        subtitulo: formData.subtitulo,
+        nombre: formData.nombre.trim(),
+        subtitulo: formData.subtitulo.trim(),
         categoria: formData.categoria,
-        descripcion: formData.descripcion,
+        descripcion: formData.descripcion.trim(),
         fecha: formData.fecha,
         hora: formData.hora,
-        lugar: formData.lugar,
+        lugar: formData.lugar.trim(),
         estadio_nombre: formData.estadio_nombre || formData.lugar,
         ciudad: formData.ciudad || 'La Paz',
         departamento: formData.departamento || 'La Paz',
@@ -173,7 +203,7 @@ export default function FormEventoPage() {
         navigate(`/evento/${nuevo.id}/tickets`);
       }
     } catch (err) {
-      setError(err.message || 'Error al guardar el evento');
+      setErrorGlobal(err.message || 'Error al guardar el evento');
       notifyError('No se pudo guardar el evento.');
     } finally {
       setGuardando(false);
@@ -195,38 +225,39 @@ export default function FormEventoPage() {
               <span className="badge rounded-pill bg-primary bg-opacity-20 text-info border border-info border-opacity-30 px-3 py-1">
                 {esEdicion ? 'Modo Edición' : 'Nueva Publicación'}
               </span>
-              <span className="text-muted small">Plataforma Oficial de Conciertos 2026</span>
+              <span className="text-muted small">Plataforma Oficial de Conciertos 2026 &bull; Bolivia</span>
             </div>
 
-            <h2 className="fw-extrabold text-white mb-1">
+            <h2 className="fw-extrabold text-white mb-1 font-display">
               {esEdicion ? `Editar Concierto: ${formData.nombre}` : 'Publicar Nuevo Concierto en Bolivia'}
             </h2>
             <p className="text-muted small mb-4">
               Completa la ficha técnica para abrir la venta de entradas en Bolivianos (Bs) con geolocalización satelital
             </p>
 
-            <AlertBanner type="danger" message={error} onDismiss={() => setError('')} />
+            <AlertBanner type="danger" message={errorGlobal} onDismiss={() => setErrorGlobal('')} />
 
-            <form onSubmit={handleSubmit}>
-              <div className="row g-3 mb-3">
+            <form onSubmit={handleSubmit} noValidate>
+              <div className="row g-3 mb-2">
                 <div className="col-md-8">
-                  <label className="form-label small fw-semibold text-muted">Nombre del Concierto / Festival *</label>
-                  <input
-                    type="text"
+                  <FormInput
+                    label="Nombre del Concierto / Festival"
                     name="nombre"
-                    required
-                    className="form-control form-control-modern"
-                    placeholder="Ej: Festival Internacional de Tupiza 2026"
                     value={formData.nombre}
+                    placeholder="Ej: Festival Internacional de Tupiza 2026"
+                    required
+                    icon="bi-music-note-beamed"
+                    error={errores.nombre}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="col-md-4">
-                  <label className="form-label small fw-semibold text-muted">Género / Categoría</label>
-                  <select
+                  <FormInput
+                    label="Género / Categoría"
                     name="categoria"
-                    className="form-select form-control-modern"
+                    type="select"
                     value={formData.categoria}
+                    icon="bi-tag"
                     onChange={handleChange}
                   >
                     <option value="Rock">Rock</option>
@@ -234,55 +265,53 @@ export default function FormEventoPage() {
                     <option value="Festivales">Festivales / Folclore</option>
                     <option value="Jazz">Jazz & Acústico</option>
                     <option value="Pop">Pop & Urbano</option>
-                  </select>
+                  </FormInput>
                 </div>
               </div>
 
-              <div className="mb-3">
-                <label className="form-label small fw-semibold text-muted">Subtítulo / Lema del Espectáculo</label>
-                <input
-                  type="text"
-                  name="subtitulo"
-                  className="form-control form-control-modern"
-                  placeholder="Ej: ¡Orgullo de los valles del sur y la tierra de Los Chichas!"
-                  value={formData.subtitulo}
-                  onChange={handleChange}
-                />
-              </div>
+              <FormInput
+                label="Subtítulo / Lema del Espectáculo"
+                name="subtitulo"
+                value={formData.subtitulo}
+                placeholder="Ej: ¡Orgullo de los valles del sur y la tierra de Los Chichas!"
+                icon="bi-chat-quote"
+                onChange={handleChange}
+              />
 
-              <div className="mb-3">
-                <label className="form-label small fw-semibold text-muted">Descripción y Artistas Invitados *</label>
-                <textarea
-                  name="descripcion"
-                  required
-                  rows="4"
-                  className="form-control form-control-modern"
-                  placeholder="Describe la experiencia, bandas invitadas, horarios de acceso y recomendaciones para los asistentes..."
-                  value={formData.descripcion}
-                  onChange={handleChange}
-                ></textarea>
-              </div>
+              <FormInput
+                label="Descripción y Artistas Invitados"
+                name="descripcion"
+                type="textarea"
+                rows={4}
+                value={formData.descripcion}
+                placeholder="Describe la experiencia, bandas invitadas, horarios de acceso y recomendaciones para los asistentes..."
+                required
+                icon="bi-card-text"
+                error={errores.descripcion}
+                onChange={handleChange}
+              />
 
-              <div className="row g-3 mb-4">
+              <div className="row g-3 mb-3">
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Fecha del Evento *</label>
-                  <input
-                    type="date"
+                  <FormInput
+                    label="Fecha del Evento"
                     name="fecha"
-                    required
-                    className="form-control form-control-modern"
+                    type="date"
                     value={formData.fecha}
+                    required
+                    icon="bi-calendar-event"
+                    error={errores.fecha}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Hora de Inicio / Apertura *</label>
-                  <input
-                    type="time"
+                  <FormInput
+                    label="Hora de Inicio / Apertura"
                     name="hora"
-                    required
-                    className="form-control form-control-modern"
+                    type="time"
                     value={formData.hora}
+                    required
+                    icon="bi-clock"
                     onChange={handleChange}
                   />
                 </div>
@@ -291,11 +320,11 @@ export default function FormEventoPage() {
               {/* Selector de Recintos de Bolivia con Geolocalización */}
               <div className="p-4 rounded-4 mb-4 border" style={{ background: 'rgba(99, 102, 241, 0.05)', borderColor: 'rgba(99, 102, 241, 0.2)' }}>
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <label className="form-label small fw-bold text-white mb-0 d-flex align-items-center gap-1">
+                  <label className="form-label small fw-bold text-white mb-0 d-flex align-items-center gap-1 font-display">
                     <i className="bi bi-geo-alt-fill text-danger"></i> Seleccionar Recinto de Bolivia (Estadios, Teatros, Arenas)
                   </label>
                   <span className="badge rounded-pill bg-info text-dark" style={{ fontSize: '0.7rem' }}>
-                    Google Maps Automático
+                    Google Maps Satelital Automático
                   </span>
                 </div>
 
@@ -340,24 +369,25 @@ export default function FormEventoPage() {
 
                 <div className="row g-2 mb-2">
                   <div className="col-md-7">
-                    <input
-                      type="text"
+                    <FormInput
+                      label="Dirección o Nombre del Recinto"
                       name="lugar"
-                      required
-                      className="form-control form-control-modern"
-                      placeholder="Dirección o nombre del recinto..."
                       value={formData.lugar}
+                      placeholder="Dirección o nombre del recinto..."
+                      required
+                      icon="bi-geo"
+                      error={errores.lugar}
                       onChange={handleChange}
                     />
                   </div>
                   <div className="col-md-5">
-                    <input
-                      type="text"
+                    <FormInput
+                      label="Ciudad"
                       name="ciudad"
-                      required
-                      className="form-control form-control-modern"
-                      placeholder="Ciudad (ej: Tupiza, La Paz...)"
                       value={formData.ciudad}
+                      placeholder="Tupiza, La Paz, Santa Cruz..."
+                      required
+                      icon="bi-pin-map"
                       onChange={handleChange}
                     />
                   </div>
@@ -372,41 +402,41 @@ export default function FormEventoPage() {
               </div>
 
               {/* Imagen y Precios */}
-              <div className="mb-3">
-                <label className="form-label small fw-semibold text-muted">URL de Imagen de Portada</label>
-                <input
-                  type="url"
-                  name="imagen_url"
-                  className="form-control form-control-modern"
-                  placeholder="https://images.unsplash.com/..."
-                  value={formData.imagen_url}
-                  onChange={handleChange}
-                />
-                <small className="text-dim">Deja vacío para usar la portada predeterminada de alta calidad.</small>
-              </div>
+              <FormInput
+                label="URL de Imagen de Portada"
+                name="imagen_url"
+                type="url"
+                value={formData.imagen_url}
+                placeholder="https://images.unsplash.com/..."
+                icon="bi-image"
+                helperText="Deja vacío para usar una imagen predeterminada HD"
+                onChange={handleChange}
+              />
 
               <div className="row g-3 mb-4">
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Precio Base de Referencia (Bs.) *</label>
-                  <input
-                    type="number"
+                  <FormInput
+                    label="Precio Base de Referencia (Bs.)"
                     name="precio_base"
-                    required
+                    type="number"
                     min="1"
-                    className="form-control form-control-modern"
                     value={formData.precio_base}
+                    required
+                    icon="bi-cash"
+                    error={errores.precio_base}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Cupo Total del Evento *</label>
-                  <input
-                    type="number"
+                  <FormInput
+                    label="Cupo Total del Evento"
                     name="cupo_total"
-                    required
+                    type="number"
                     min="1"
-                    className="form-control form-control-modern"
                     value={formData.cupo_total}
+                    required
+                    icon="bi-people"
+                    error={errores.cupo_total}
                     onChange={handleChange}
                   />
                 </div>
@@ -418,7 +448,10 @@ export default function FormEventoPage() {
                 className="btn-modern-primary w-100 py-3 fs-6"
               >
                 {guardando ? (
-                  <span>Guardando...</span>
+                  <span>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Guardando...
+                  </span>
                 ) : (
                   <span>
                     <i className={`bi ${esEdicion ? 'bi-check-lg' : 'bi-cloud-upload'} me-1`}></i>

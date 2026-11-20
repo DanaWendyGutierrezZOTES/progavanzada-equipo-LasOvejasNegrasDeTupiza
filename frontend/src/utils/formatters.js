@@ -26,6 +26,20 @@ export function formatDate(fechaStr) {
 }
 
 /**
+ * Formatea una fecha a formato largo en español
+ * Ejemplo: "2026-11-15" -> "domingo, 15 de noviembre de 2026"
+ */
+export function formatearFechaLarga(fechaStr) {
+  if (!fechaStr) return '';
+  try {
+    const fecha = new Date(fechaStr + (fechaStr.includes('T') ? '' : 'T00:00:00'));
+    return fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  } catch {
+    return fechaStr;
+  }
+}
+
+/**
  * Extrae día numérico y mes en mayúsculas para las tarjetas de concierto
  * Ejemplo: "2026-11-15" -> { dia: 15, mes: "NOV" }
  */
